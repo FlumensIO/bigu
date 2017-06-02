@@ -7,7 +7,7 @@
  * @extends NationalGridCoords
  * @returns {OSRef}
  */
-OSRef = function(easting, northing) {
+let OSRef = function(easting, northing) {
   this.x = easting;
   this.y = northing;
 };

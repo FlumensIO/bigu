@@ -6,7 +6,7 @@
  * @constructor
  * @returns {OSIRef}
  */
-OSIRef = function(easting, northing) {
+let OSIRef = function(easting, northing) {
   this.x = easting;
   this.y = northing;
 };

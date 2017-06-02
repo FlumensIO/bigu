@@ -7,7 +7,7 @@
  * @constructor
  * @returns {NationalGridCoords}
  */
-NationalGridCoords = function () {};
+let NationalGridCoords = function () {};
 
 /**
  *

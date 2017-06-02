@@ -6,7 +6,7 @@
  * @param {number} lng
  * @constructor
  */
-OSGB36LatLng = function(lat, lng) {
+let OSGB36LatLng = function(lat, lng) {
   this.lat = lat;
   this.lng = lng;
 };

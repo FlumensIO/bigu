@@ -240,7 +240,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * @constructor
 	 */
-	GridRefParser = function GridRefParser() {};
+	var GridRefParser = function GridRefParser() {};
 
 	/**
 	 * x,y offsets (in metres) for tetrad letter codes
@@ -440,7 +440,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * @constructor
 	 */
-	GridRefParserCI = function GridRefParserCI() {};
+	var GridRefParserCI = function GridRefParserCI() {};
 
 	GridRefParserCI.prototype = new GridRefParser();
 	GridRefParserCI.prototype.constructor = GridRefParserCI;
@@ -595,7 +595,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * @constructor
 	 */
-	GridRefParserGB = function GridRefParserGB() {};
+	var GridRefParserGB = function GridRefParserGB() {};
 
 	GridRefParserGB.prototype = new GridRefParser();
 	GridRefParserGB.prototype.constructor = GridRefParserGB;
@@ -958,7 +958,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * @constructor
 	 */
-	GridRefParserIE = function GridRefParserIE() {};
+	var GridRefParserIE = function GridRefParserIE() {};
 
 	GridRefParserIE.prototype = new GridRefParser();
 	GridRefParserIE.prototype.constructor = GridRefParserIE;
@@ -1163,7 +1163,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {number} lat
 	 * @param {number} lng
 	 */
-	CILatLng = function CILatLng(lat, lng) {
+	var CILatLng = function CILatLng(lat, lng) {
 	  this.lat = lat;
 	  this.lng = lng;
 	};
@@ -1237,7 +1237,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {number} lng
 	 * @constructor
 	 */
-	IELatLng = function IELatLng(lat, lng) {
+	var IELatLng = function IELatLng(lat, lng) {
 	  this.lat = lat;
 	  this.lng = lng;
 	};
@@ -1344,7 +1344,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {number} lng
 	 * @constructor
 	 */
-	LatLng = function LatLng(lat, lng) {
+	var LatLng = function LatLng(lat, lng) {
 	  this.lat = lat;
 	  this.lng = lng;
 	};
@@ -1401,7 +1401,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * @constructor
 	 */
-	MappingUtils = function MappingUtils() {};
+	var MappingUtils = function MappingUtils() {};
 
 	//MappingUtils.prototype = new EventModelObject(); // inherit the event framework
 	//MappingUtils.prototype.constructor = MappingUtils;
@@ -1679,7 +1679,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @constructor
 	 * @returns {NationalGridCoords}
 	 */
-	NationalGridCoords = function NationalGridCoords() {};
+	var NationalGridCoords = function NationalGridCoords() {};
 
 	/**
 	 *
@@ -1731,7 +1731,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @constructor
 	 * @returns {OSCIRef}
 	 */
-	OSCIRef = function OSCIRef(easting, northing) {
+	var OSCIRef = function OSCIRef(easting, northing) {
 	  this.x = easting;
 	  this.y = northing;
 	};
@@ -1845,7 +1845,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {number} lng
 	 * @constructor
 	 */
-	OSGB36LatLng = function OSGB36LatLng(lat, lng) {
+	var OSGB36LatLng = function OSGB36LatLng(lat, lng) {
 	  this.lat = lat;
 	  this.lng = lng;
 	};
@@ -2013,7 +2013,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @constructor
 	 * @returns {OSIRef}
 	 */
-	OSIRef = function OSIRef(easting, northing) {
+	var OSIRef = function OSIRef(easting, northing) {
 	  this.x = easting;
 	  this.y = northing;
 	};
@@ -2153,7 +2153,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @extends NationalGridCoords
 	 * @returns {OSRef}
 	 */
-	OSRef = function OSRef(easting, northing) {
+	var OSRef = function OSRef(easting, northing) {
 	  this.x = easting;
 	  this.y = northing;
 	};
@@ -2287,7 +2287,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {number} lng
 	 * @constructor
 	 */
-	WGS84LatLng = function WGS84LatLng(lat, lng) {
+	var WGS84LatLng = function WGS84LatLng(lat, lng) {
 	  this.lat = lat;
 	  this.lng = lng;
 	};

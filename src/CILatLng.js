@@ -6,7 +6,7 @@
  * @param {number} lat
  * @param {number} lng
  */
-CILatLng = function(lat, lng) {
+let CILatLng = function(lat, lng) {
   this.lat = lat;
   this.lng = lng;
 };

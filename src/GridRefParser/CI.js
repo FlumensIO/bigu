@@ -2,7 +2,7 @@
 /**
  * @constructor
  */
-GridRefParserCI = function() {};
+let GridRefParserCI = function() {};
 
 GridRefParserCI.prototype = new GridRefParser();
 GridRefParserCI.prototype.constructor = GridRefParserCI;

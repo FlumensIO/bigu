@@ -6,7 +6,7 @@
  * @constructor
  * @returns {OSCIRef}
  */
-OSCIRef = function(easting, northing) {
+let OSCIRef = function(easting, northing) {
   this.x = easting;
   this.y = northing;
 };

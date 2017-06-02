@@ -6,7 +6,7 @@
  * @param {number} lng
  * @constructor
  */
-WGS84LatLng = function(lat, lng) {
+let WGS84LatLng = function(lat, lng) {
   this.lat = lat;
   this.lng = lng;
 };

@@ -4,7 +4,7 @@ import GridRefParserIE from './IE';
 /**
  * @constructor
  */
-GridRefParser = function() {};
+let GridRefParser = function() {};
 
 /**
  * x,y offsets (in metres) for tetrad letter codes

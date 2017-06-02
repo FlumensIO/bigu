@@ -3,7 +3,7 @@ import NationalGridCoords from './NationalGridCoords';
 /**
  * @constructor
  */
-MappingUtils = function() {};
+let MappingUtils = function() {};
 
 //MappingUtils.prototype = new EventModelObject(); // inherit the event framework
 //MappingUtils.prototype.constructor = MappingUtils;
