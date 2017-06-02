@@ -6,12 +6,12 @@
  * @param {number} lng
  * @constructor
  */
-BIGU.LatLng = function (lat, lng) {
+LatLng = function (lat, lng) {
   this.lat = lat;
   this.lng = lng;
 };
 
-BIGU.LatLng.transform = function(lat, lon, a, e, h, a2, e2, xp, yp, zp, xr, yr, zr, s) {
+LatLng.transform = function(lat, lon, a, e, h, a2, e2, xp, yp, zp, xr, yr, zr, s) {
   // convert to cartesian; lat, lon are radians
   var sf = s * 0.000001;
   var v = a / (Math.sqrt(1 - (e *(Math.sin(lat) * Math.sin(lat)))));
@@ -39,5 +39,7 @@ BIGU.LatLng.transform = function(lat, lon, a, e, h, a2, e2, xp, yp, zp, xr, yr, 
   }
   //h = p / Math.cos(lat) - v;
   //var geo = { latitude: lat, longitude: lon, height: h };  // object to hold lat and lon
-  return(new BIGU.LatLng(lat, lon));
+  return(new LatLng(lat, lon));
 };
+
+export default LatLng;

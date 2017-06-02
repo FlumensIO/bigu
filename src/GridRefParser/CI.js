@@ -2,19 +2,19 @@
 /**
  * @constructor
  */
-BIGU.GridRefParserCI = function() {};
+GridRefParserCI = function() {};
 
-BIGU.GridRefParserCI.prototype = new BIGU.GridRefParser();
-BIGU.GridRefParserCI.prototype.constructor = BIGU.GridRefParserCI;
-BIGU.GridRefParserCI.prototype.country = 'CI';
-BIGU.GridRefParserCI.prototype.NationalRef = BIGU.OSCIRef;
+GridRefParserCI.prototype = new GridRefParser();
+GridRefParserCI.prototype.constructor = GridRefParserCI;
+GridRefParserCI.prototype.country = 'CI';
+GridRefParserCI.prototype.NationalRef = OSCIRef;
 
 /**
  *
  * @param {string} rawGridRef
  * @throws Error
  */
-BIGU.GridRefParserCI.prototype.parse = function(rawGridRef) {
+GridRefParserCI.prototype.parse = function(rawGridRef) {
   var trimmedLocality = rawGridRef.replace(/[\[\]\s\t\.\/-]+/g, '').toUpperCase();
   var tetradCode = '';
   var enl;
@@ -22,7 +22,7 @@ BIGU.GridRefParserCI.prototype.parse = function(rawGridRef) {
   if (/[ABCDEFGHIJKLMNPQRSTUVWXYZ]$/.test(trimmedLocality)) {
     // tetrad or quadrant
 
-    if (BIGU.GridRefParser.quadrantOffsets.hasOwnProperty(trimmedLocality.substr(trimmedLocality.length - 2))) {
+    if (GridRefParser.quadrantOffsets.hasOwnProperty(trimmedLocality.substr(trimmedLocality.length - 2))) {
       this.quadrantCode = trimmedLocality.substr(trimmedLocality.length - 2);
       trimmedLocality = trimmedLocality.substr(0, trimmedLocality.length - 2);
     } else {
@@ -32,10 +32,10 @@ BIGU.GridRefParserCI.prototype.parse = function(rawGridRef) {
   }
 
   if (/^(W[AV](?:\d\d){1,5})$/.test(trimmedLocality)) {
-    if ((enl = BIGU.GridRefParserCI.gridref_string_to_e_n_l(trimmedLocality))) {
+    if ((enl = GridRefParserCI.gridref_string_to_e_n_l(trimmedLocality))) {
       this.length = enl.length;
 
-      this.osRef = new BIGU.OSCIRef(enl.e, enl.n);
+      this.osRef = new OSCIRef(enl.e, enl.n);
       this.hectad = this.osRef.to_gridref(10000);
 
       if (this.length === 10000 && (tetradCode || this.quadrantCode)) {
@@ -44,8 +44,8 @@ BIGU.GridRefParserCI.prototype.parse = function(rawGridRef) {
           this.tetrad = this.hectad + tetradCode;
           this.tetradLetter = tetradCode;
           this.length = 2000; // 2km square
-          this.osRef.x += BIGU.GridRefParser.tetradOffsets[tetradCode][0];
-          this.osRef.y += BIGU.GridRefParser.tetradOffsets[tetradCode][1];
+          this.osRef.x += GridRefParser.tetradOffsets[tetradCode][0];
+          this.osRef.y += GridRefParser.tetradOffsets[tetradCode][1];
         } else {
           // quadrant
           this.preciseGridRef = trimmedLocality + this.quadrantCode;
@@ -53,8 +53,8 @@ BIGU.GridRefParserCI.prototype.parse = function(rawGridRef) {
           this.tetrad = '';
           this.quadrant = this.preciseGridRef;
           this.length = 5000; // 5km square
-          this.osRef.x += BIGU.GridRefParser.quadrantOffsets[this.quadrantCode][0];
-          this.osRef.y += BIGU.GridRefParser.quadrantOffsets[this.quadrantCode][1];
+          this.osRef.x += GridRefParser.quadrantOffsets[this.quadrantCode][0];
+          this.osRef.y += GridRefParser.quadrantOffsets[this.quadrantCode][1];
         }
       } else {
         this.preciseGridRef = trimmedLocality;
@@ -75,7 +75,7 @@ BIGU.GridRefParserCI.prototype.parse = function(rawGridRef) {
   }
 };
 
-BIGU.GridRefParserCI.prototype.parse_well_formed = BIGU.GridRefParserCI.prototype.parse;
+GridRefParserCI.prototype.parse_well_formed = GridRefParserCI.prototype.parse;
 
 /**
  *
@@ -83,7 +83,7 @@ BIGU.GridRefParserCI.prototype.parse_well_formed = BIGU.GridRefParserCI.prototyp
  * @param {string} gridRef plain string without tetrad or quadrant suffix
  * @return false|{'eKm' : easting, 'nKm' : northing, 'lengthKm' : length}
  */
-BIGU.GridRefParserCI.gridref_string_to_e_n_l = function(gridRef) {
+GridRefParserCI.gridref_string_to_e_n_l = function(gridRef) {
   var northOffset, x, y, length;
 
   // assume modern alphabetical sheet ref
@@ -141,3 +141,5 @@ BIGU.GridRefParserCI.gridref_string_to_e_n_l = function(gridRef) {
     length : length
   };
 };
+
+export default GridRefParserCI;

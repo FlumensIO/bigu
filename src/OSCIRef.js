@@ -4,23 +4,23 @@
  * @param {number} easting metres
  * @param {number} northing metres
  * @constructor
- * @returns {BIGU.OSCIRef}
+ * @returns {OSCIRef}
  */
-BIGU.OSCIRef = function(easting, northing) {
+OSCIRef = function(easting, northing) {
   this.x = easting;
   this.y = northing;
 };
 
-BIGU.OSCIRef.prototype = new BIGU.NationalGridCoords();
-BIGU.OSCIRef.prototype.constructor = BIGU.OSCIRef;
-BIGU.OSCIRef.prototype.country = 'CI';
+OSCIRef.prototype = new NationalGridCoords();
+OSCIRef.prototype.constructor = OSCIRef;
+OSCIRef.prototype.country = 'CI';
 
 /**
  * convert easting,northing to a WGS84 lat lng
  *
- * @returns {BIGU.WGS84LatLng}
+ * @returns {WGS84LatLng}
  */
-BIGU.OSCIRef.prototype.to_latLng = function() {
+OSCIRef.prototype.to_latLng = function() {
   //nX = north;
   //ex = east;
 
@@ -37,7 +37,7 @@ BIGU.OSCIRef.prototype.to_latLng = function() {
   var bf0 = b * f0;
   var n = (af0 - bf0) / (af0 + bf0);
   var Et = this.x - e0;
-  var phid = BIGU.OSCIRef.initialLat(this.y, n0, af0, phi0, n, bf0);
+  var phid = OSCIRef.initialLat(this.y, n0, af0, phi0, n, bf0);
   var nu = af0 / (Math.sqrt(1 - (e2 * (Math.sin(phid) * Math.sin(phid)))));
   var rho = (nu * (1 - e2)) / (1 - (e2 * (Math.sin(phid)) * (Math.sin(phid))));
   var eta2 = (nu / rho) - 1;
@@ -55,12 +55,12 @@ BIGU.OSCIRef.prototype.to_latLng = function() {
   var XIIA = clatm1 / (5040 * Math.pow(nu, 7)) * (61 + (662 * tlat2) + (1320 * tlat4) + (720 * tlat6));
   var lambdap = (lam0 + (Et * X) - ((Et * Et * Et) * XI) + (Math.pow(Et, 5) * XII) - (Math.pow(Et, 7) * XIIA));
 
-  var latLngRadians = BIGU.OSCIRef.convert_to_wgs(phip, lambdap);
+  var latLngRadians = OSCIRef.convert_to_wgs(phip, lambdap);
 
-  return new BIGU.WGS84LatLng(latLngRadians.lat * rad2deg, latLngRadians.lng * rad2deg);
+  return new WGS84LatLng(latLngRadians.lat * rad2deg, latLngRadians.lng * rad2deg);
 };
 
-BIGU.OSCIRef.convert_to_wgs = function(phip, lambdap) {
+OSCIRef.convert_to_wgs = function(phip, lambdap) {
   var WGS84_AXIS = 6378137;
   var WGS84_ECCENTRIC = 0.00669438037928458;
   //OSGB_AXIS = 6377563.396;
@@ -70,36 +70,39 @@ BIGU.OSCIRef.convert_to_wgs = function(phip, lambdap) {
   var INT24_AXIS = 6378388.000;
   var INT24_ECCENTRIC = 0.0067226700223333;
   var height = 10;  // dummy height
-  return BIGU.LatLng.transform(phip, lambdap, INT24_AXIS, INT24_ECCENTRIC, height, WGS84_AXIS, WGS84_ECCENTRIC, -83.901, -98.127, -118.635, 0, 0, 0, 0);
+  return LatLng.transform(phip, lambdap, INT24_AXIS, INT24_ECCENTRIC, height, WGS84_AXIS, WGS84_ECCENTRIC, -83.901, -98.127, -118.635, 0, 0, 0, 0);
 };
 
-BIGU.OSCIRef.initialLat = function(north, n0, af0, phi0, n, bf0) {
+OSCIRef.initialLat = function(north, n0, af0, phi0, n, bf0) {
   var phi1 = ((north - n0) / af0) + phi0;
-  var M = BIGU.OSCIRef.marc(bf0, n, phi0, phi1);
+  var M = OSCIRef.marc(bf0, n, phi0, phi1);
   var phi2 = ((north - n0 - M) / af0) + phi1;
   var ind = 0;
   while ((Math.abs(north - n0 - M) > 0.00001) && (ind < 20))  // max 20 iterations in case of error
   {
     ind += 1;
     phi2 = ((north - n0 - M) / af0) + phi1;
-    M = BIGU.OSCIRef.marc(bf0, n, phi0, phi2);
+    M = OSCIRef.marc(bf0, n, phi0, phi2);
     phi1 = phi2;
   }
   return phi2;
 };
 
-BIGU.OSCIRef.marc = function(bf0, n, phi0, phi) {
+OSCIRef.marc = function(bf0, n, phi0, phi) {
   return bf0 * (((1 + n + ((5 / 4) * (n * n)) + ((5 / 4) * (n * n * n))) * (phi - phi0)) -
     (((3 * n) + (3 * (n * n)) + ((21 / 8) * (n * n * n))) * (Math.sin(phi - phi0)) * (Math.cos(phi + phi0))) +
     ((((15 / 8) * (n * n)) + ((15 / 8) * (n * n * n))) * (Math.sin(2 * (phi - phi0))) * (Math.cos(2 * (phi + phi0)))) -
     (((35 / 24) * (n * n * n)) * (Math.sin(3 * (phi - phi0))) * (Math.cos(3 * (phi + phi0)))));
 };
 
-BIGU.OSCIRef.prototype.to_gridref = function(precision) {
+OSCIRef.prototype.to_gridref = function(precision) {
   if (this.y >= 5500000) {
-    return BIGU.NationalGridCoords._e_n_to_gr('WA', this.x - 500000, this.y - 5500000, precision ? precision : 1);
+    return NationalGridCoords._e_n_to_gr('WA', this.x - 500000, this.y - 5500000, precision ? precision : 1);
   } else if (this.y < 5500000) {
-    return BIGU.NationalGridCoords._e_n_to_gr('WV', this.x - 500000, this.y - 5400000, precision ? precision : 1);
+    return NationalGridCoords._e_n_to_gr('WV', this.x - 500000, this.y - 5400000, precision ? precision : 1);
   }
   return null;
 };
+
+
+export default OSCIRef;

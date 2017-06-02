@@ -6,7 +6,7 @@
  * @param {number} lat
  * @param {number} lng
  */
-BIGU.CILatLng = function(lat, lng) {
+CILatLng = function(lat, lng) {
   this.lat = lat;
   this.lng = lng;
 };
@@ -14,9 +14,9 @@ BIGU.CILatLng = function(lat, lng) {
 /**
  * converts lat and lon to CI northings and eastings
  *
- * @returns BIGU.OSCIRef
+ * @returns OSCIRef
  */
-BIGU.CILatLng.prototype.to_os_coords = function() {
+CILatLng.prototype.to_os_coords = function() {
   //var deg2rad = Math.PI / 180;
   //var rad2deg = 180.0 / Math.PI;
 
@@ -50,7 +50,7 @@ BIGU.CILatLng.prototype.to_os_coords = function() {
 
   // northing
   var n = (af0 - bf0) / (af0 + bf0);
-  var M = BIGU.OSGB36LatLng._Marc(bf0, n, phi0, phi);
+  var M = OSGB36LatLng._Marc(bf0, n, phi0, phi);
   var I = M + (n0);
   var II = (nu / 2) * Math.sin(phi) * Math.cos(phi);
   var III = ((nu / 24) * Math.sin(phi) * Math.pow(Math.cos(phi), 3)) * (5 - Math.pow(Math.tan(phi), 2) + (9 * eta2));
@@ -58,5 +58,7 @@ BIGU.CILatLng.prototype.to_os_coords = function() {
   var north = I + ((p * p) * II) + (Math.pow(p, 4) * III) + (Math.pow(p, 6) * IIIA);
 
   //return {x: Math.round(east), y: Math.round(north)};
-  return new BIGU.OSCIRef(Math.round(east), Math.round(north));
+  return new OSCIRef(Math.round(east), Math.round(north));
 };
+
+export default CILatLng;

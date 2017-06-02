@@ -6,13 +6,13 @@
  * @param {number} lng
  * @constructor
  */
-BIGU.IELatLng = function(lat, lng) {
+IELatLng = function(lat, lng) {
   this.lat = lat;
   this.lng = lng;
 };
 
 //converts lat and lon (modified Airy) to OSI northings and eastings
-BIGU.IELatLng.prototype.to_os_coords = function() {
+IELatLng.prototype.to_os_coords = function() {
   //var deg2rad = Math.PI / 180;
   //var rad2deg = 180.0 / Math.PI;
 
@@ -46,7 +46,7 @@ BIGU.IELatLng.prototype.to_os_coords = function() {
 
   // northing
   var n = (af0 - bf0) / (af0 + bf0);
-  var M = BIGU.OSGB36LatLng._Marc(bf0, n, phi0, phi);
+  var M = OSGB36LatLng._Marc(bf0, n, phi0, phi);
   var I = M + (n0);
   var II = (nu / 2) * Math.sin(phi) * Math.cos(phi);
   var III = ((nu / 24) * Math.sin(phi) * Math.pow(Math.cos(phi), 3)) * (5 - Math.pow(Math.tan(phi), 2) + (9 * eta2));
@@ -57,18 +57,18 @@ BIGU.IELatLng.prototype.to_os_coords = function() {
 
   /*
    return (east > 0 && north > 0) ?
-   new BIGU.OSIRef(Math.round(east), Math.round(north))
+   new OSIRef(Math.round(east), Math.round(north))
    :
    null;
    */
-  return new BIGU.OSIRef(Math.round(east), Math.round(north));
+  return new OSIRef(Math.round(east), Math.round(north));
 };
 
 /**
  * convert Irish projection to WGS84 (for Google Maps)
  * see http://www.dorcus.co.uk/carabus/ll_ngr.html
  */
-BIGU.IELatLng.prototype.IE_to_WGS84 = function() {
+IELatLng.prototype.IE_to_WGS84 = function() {
   var IRISH_AXIS = 6377340.189;
   var IRISH_ECCENTRIC = 0.00667054015;
 
@@ -89,8 +89,10 @@ BIGU.IELatLng.prototype.IE_to_WGS84 = function() {
 
   //height = 0;
 
-  var latLngRadians = BIGU.LatLng.transform(this.lat * deg2rad, this.lng * deg2rad, IRISH_AXIS, IRISH_ECCENTRIC, 0, WGS84_AXIS, WGS84_ECCENTRIC,
+  var latLngRadians = LatLng.transform(this.lat * deg2rad, this.lng * deg2rad, IRISH_AXIS, IRISH_ECCENTRIC, 0, WGS84_AXIS, WGS84_ECCENTRIC,
     482.53, -130.596, 564.557, -1.042, -0.214, -0.631, -8.15);
 
-  return new BIGU.WGS84LatLng(latLngRadians.lat * rad2deg, latLngRadians.lng * rad2deg);
+  return new WGS84LatLng(latLngRadians.lat * rad2deg, latLngRadians.lng * rad2deg);
 };
+
+export default IELatLng;

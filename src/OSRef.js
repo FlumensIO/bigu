@@ -4,24 +4,24 @@
  * @param {number} easting metres
  * @param {number} northing metres
  * @constructor
- * @extends BIGU.NationalGridCoords
- * @returns {BIGU.OSRef}
+ * @extends NationalGridCoords
+ * @returns {OSRef}
  */
-BIGU.OSRef = function(easting, northing) {
+OSRef = function(easting, northing) {
   this.x = easting;
   this.y = northing;
 };
 
-BIGU.OSRef.prototype = new BIGU.NationalGridCoords();
-BIGU.OSRef.prototype.constructor = BIGU.OSRef;
-BIGU.OSRef.prototype.country = 'GB';
+OSRef.prototype = new NationalGridCoords();
+OSRef.prototype.constructor = OSRef;
+OSRef.prototype.country = 'GB';
 
 /**
  *
  * @param {number} precision metres
  * @returns {String}
  */
-BIGU.OSRef.prototype.to_gridref = function (precision) {
+OSRef.prototype.to_gridref = function (precision) {
   var hundredkmE = this.x / 100000 | 0; // Math.floor(this.x / 100000);
   var hundredkmN = this.y / 100000 | 0; // Math.floor(this.y / 100000);
   var firstLetter = '';
@@ -54,7 +54,7 @@ BIGU.OSRef.prototype.to_gridref = function (precision) {
 
   secondLetter = String.fromCharCode(index);
 
-  return BIGU.NationalGridCoords._e_n_to_gr(
+  return NationalGridCoords._e_n_to_gr(
     firstLetter + secondLetter,
     (this.x - (100000 * hundredkmE)),
     (this.y - (100000 * hundredkmN)),
@@ -62,16 +62,16 @@ BIGU.OSRef.prototype.to_gridref = function (precision) {
   );
 };
 
-BIGU.OSRef.prototype.is_gb_hectad = function() {
-  return BIGU.MappingUtils.gbHectads.indexOf(BIGU.MappingUtils.gb_coords_to_hectad(this.x, this.y)) !== -1;
+OSRef.prototype.is_gb_hectad = function() {
+  return MappingUtils.gbHectads.indexOf(MappingUtils.gb_coords_to_hectad(this.x, this.y)) !== -1;
 };
 
 /**
  * convert easting,northing to a WGS84 lat lng
  *
- * @returns {BIGU.WGS84LatLng}
+ * @returns {WGS84LatLng}
  */
-BIGU.OSRef.prototype.to_latLng = function() {
+OSRef.prototype.to_latLng = function() {
   //airy1830 = RefEll::airy1830(); //new RefEll(6377563.396, 6356256.909);
   //var OSGB_F0  = 0.9996012717;
   //var N0       = -100000.0;
@@ -165,9 +165,11 @@ BIGU.OSRef.prototype.to_latLng = function() {
     + (XII * Math.pow(E - E0, 5.0))
     - (XIIA * Math.pow(E - E0, 7.0));
 
-  //var ll = new BIGU.OSGB36LatLng(rad2deg * phi, rad2deg * lambda); // airy 1830
+  //var ll = new OSGB36LatLng(rad2deg * phi, rad2deg * lambda); // airy 1830
   //ll.OSGB36_to_WGS84(); // google earth uses WGS84
 
   //return ll;
-  return (new BIGU.OSGB36LatLng(rad2deg * phi, rad2deg * lambda)).to_WGS84();
+  return (new OSGB36LatLng(rad2deg * phi, rad2deg * lambda)).to_WGS84();
 };
+
+export default OSRef;

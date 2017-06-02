@@ -6,12 +6,12 @@
  * @param {number} lng
  * @constructor
  */
-BIGU.WGS84LatLng = function(lat, lng) {
+WGS84LatLng = function(lat, lng) {
   this.lat = lat;
   this.lng = lng;
 };
 
-BIGU.WGS84LatLng.prototype.to_OSGB1936_latlng = function () {
+WGS84LatLng.prototype.to_OSGB1936_latlng = function () {
   //var deg2rad = Math.PI / 180;
   //var rad2deg = 180.0 / Math.PI;
 
@@ -65,10 +65,10 @@ BIGU.WGS84LatLng.prototype.to_OSGB1936_latlng = function () {
   newLat = newLat * rad2deg;
   newLon = newLon * rad2deg;
 
-  return new BIGU.OSGB36LatLng(newLat, newLon);
+  return new OSGB36LatLng(newLat, newLon);
 };
 
-BIGU.WGS84LatLng.prototype.to_IE_latlng = function () {
+WGS84LatLng.prototype.to_IE_latlng = function () {
   var phip = this.lat * deg2rad;
   var lambdap = this.lng * deg2rad;
 
@@ -92,13 +92,13 @@ BIGU.WGS84LatLng.prototype.to_IE_latlng = function () {
    */
 
   var height = 0;
-  var latlng =  BIGU.LatLng.transform(phip, lambdap, WGS84_AXIS, WGS84_ECCENTRIC, height, IRISH_AXIS, IRISH_ECCENTRIC,
+  var latlng =  LatLng.transform(phip, lambdap, WGS84_AXIS, WGS84_ECCENTRIC, height, IRISH_AXIS, IRISH_ECCENTRIC,
     -482.53, 130.596, -564.557, 1.042, 0.214, 0.631, 8.15);
 
-  return new BIGU.IELatLng(latlng.lat * rad2deg, latlng.lng * rad2deg);
+  return new IELatLng(latlng.lat * rad2deg, latlng.lng * rad2deg);
 };
 
-BIGU.WGS84LatLng.prototype.to_CI_latlng = function () {
+WGS84LatLng.prototype.to_CI_latlng = function () {
   var phip = this.lat * deg2rad;
   var lambdap = this.lng * deg2rad;
 
@@ -122,8 +122,10 @@ BIGU.WGS84LatLng.prototype.to_CI_latlng = function () {
    */
 
   var height = 0;
-  var latlng =  BIGU.LatLng.transform(phip, lambdap, WGS84_AXIS, WGS84_ECCENTRIC, height, CI_AXIS, CI_ECCENTRIC,
+  var latlng =  LatLng.transform(phip, lambdap, WGS84_AXIS, WGS84_ECCENTRIC, height, CI_AXIS, CI_ECCENTRIC,
     83.901, 98.127, 118.635, 0, 0, 0, 0);
 
-  return new BIGU.CILatLng(latlng.lat * rad2deg, latlng.lng * rad2deg);
+  return new CILatLng(latlng.lat * rad2deg, latlng.lng * rad2deg);
 };
+
+export default WGS84LatLng;

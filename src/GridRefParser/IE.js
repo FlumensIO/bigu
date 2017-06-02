@@ -2,14 +2,14 @@
 /**
  * @constructor
  */
-BIGU.GridRefParserIE = function() {};
+GridRefParserIE = function() {};
 
-BIGU.GridRefParserIE.prototype = new BIGU.GridRefParser();
-BIGU.GridRefParserIE.prototype.constructor = BIGU.GridRefParserIE;
-BIGU.GridRefParserIE.prototype.country = 'IE';
-BIGU.GridRefParserIE.prototype.NationalRef = BIGU.OSIRef;
+GridRefParserIE.prototype = new GridRefParser();
+GridRefParserIE.prototype.constructor = GridRefParserIE;
+GridRefParserIE.prototype.country = 'IE';
+GridRefParserIE.prototype.NationalRef = OSIRef;
 
-BIGU.GridRefParserIE.gridLetter = {
+GridRefParserIE.gridLetter = {
   A: [0,4],
   B: [1,4],
   C: [2,4],
@@ -36,13 +36,13 @@ BIGU.GridRefParserIE.gridLetter = {
  * @param {string} rawGridRef
  * @throws Error
  */
-BIGU.GridRefParserIE.prototype.parse = function(rawGridRef) {
+GridRefParserIE.prototype.parse = function(rawGridRef) {
   var trimmedLocality = rawGridRef.replace(/[\[\]\s\t\.-]+/g, '').toUpperCase();
 
   if (/[ABCDEFGHIJKLMNPQRSTUVWXYZ]$/.test(trimmedLocality)) {
     // tetrad or quadrant
 
-    if (BIGU.GridRefParser.quadrantOffsets.hasOwnProperty(trimmedLocality.substr(trimmedLocality.length - 2))) {
+    if (GridRefParser.quadrantOffsets.hasOwnProperty(trimmedLocality.substr(trimmedLocality.length - 2))) {
       this.quadrantCode = trimmedLocality.substr(trimmedLocality.length - 2);
       trimmedLocality = trimmedLocality.substr(0, trimmedLocality.length - 2);
     } else {
@@ -61,15 +61,15 @@ BIGU.GridRefParserIE.prototype.parse = function(rawGridRef) {
         this.preciseGridRef = this.hectad + this.tetradLetter;
         this.tetrad = this.preciseGridRef;
         this.length = 2000; // 2km square
-        this.osRef.x += BIGU.GridRefParser.tetradOffsets[this.tetradLetter][0];
-        this.osRef.y += BIGU.GridRefParser.tetradOffsets[this.tetradLetter][1];
+        this.osRef.x += GridRefParser.tetradOffsets[this.tetradLetter][0];
+        this.osRef.y += GridRefParser.tetradOffsets[this.tetradLetter][1];
       } else {
         // quadrant
         this.preciseGridRef = this.hectad + this.quadrantCode;
         this.quadrant = this.preciseGridRef;
         this.length = 5000; // 5km square
-        this.osRef.x += BIGU.GridRefParser.quadrantOffsets[this.quadrantCode][0];
-        this.osRef.y += BIGU.GridRefParser.quadrantOffsets[this.quadrantCode][1];
+        this.osRef.x += GridRefParser.quadrantOffsets[this.quadrantCode][0];
+        this.osRef.y += GridRefParser.quadrantOffsets[this.quadrantCode][1];
       }
     } else {
       this.preciseGridRef = trimmedLocality;
@@ -85,16 +85,16 @@ BIGU.GridRefParserIE.prototype.parse = function(rawGridRef) {
   }
 };
 
-BIGU.GridRefParserIE.prototype.parse_well_formed = BIGU.GridRefParserIE.prototype.parse;
+GridRefParserIE.prototype.parse_well_formed = GridRefParserIE.prototype.parse;
 
-BIGU.GridRefParserIE._IE_GRID_LETTERS = 'VQLFAWRMGBXSNHCYTOJD';
+GridRefParserIE._IE_GRID_LETTERS = 'VQLFAWRMGBXSNHCYTOJD';
 
 /**
  *
  * @param {string} gridRef nn/nnnn or [A-Z]nnnn or [A-Z]/nnnn (no other punctuation by this point), all upper-case
  * @return boolean
  */
-BIGU.GridRefParserIE.prototype.parse_gr_string_without_tetrads = function(gridRef) {
+GridRefParserIE.prototype.parse_gr_string_without_tetrads = function(gridRef) {
   var x, y, ref, char;
 
   if (/^\d{2}\/(?:\d\d){1,5}$/.test(gridRef)) {
@@ -111,7 +111,7 @@ BIGU.GridRefParserIE.prototype.parse_gr_string_without_tetrads = function(gridRe
     }
 
     ref = gridRef.substr(3);
-    char = BIGU.GridRefParserIE._IE_GRID_LETTERS.charAt((x * 5) + y);
+    char = GridRefParserIE._IE_GRID_LETTERS.charAt((x * 5) + y);
 
     x *= 100000;
     y *= 100000;
@@ -127,7 +127,7 @@ BIGU.GridRefParserIE.prototype.parse_gr_string_without_tetrads = function(gridRe
 
     if (gridRef) {
       char = gridRef.charAt(0);
-      var p = BIGU.GridRefParserIE._IE_GRID_LETTERS.indexOf(char);
+      var p = GridRefParserIE._IE_GRID_LETTERS.indexOf(char);
 
       if (p !== -1) {
         x = Math.floor(p / 5) * 100000;
@@ -150,7 +150,7 @@ BIGU.GridRefParserIE.prototype.parse_gr_string_without_tetrads = function(gridRe
 
   switch (ref.length) {
     case 2:
-      this.osRef = new BIGU.OSIRef(
+      this.osRef = new OSIRef(
         x + (ref.charAt(0) * 10000),
         y + (ref.charAt(1) * 10000)
       );
@@ -159,7 +159,7 @@ BIGU.GridRefParserIE.prototype.parse_gr_string_without_tetrads = function(gridRe
       break;
 
     case 4:
-      this.osRef = new BIGU.OSIRef(
+      this.osRef = new OSIRef(
         x + Math.floor(ref / 100) * 1000,
         y + (ref % 100) * 1000
       );
@@ -168,7 +168,7 @@ BIGU.GridRefParserIE.prototype.parse_gr_string_without_tetrads = function(gridRe
       break;
 
     case 6:
-      this.osRef = new BIGU.OSIRef(
+      this.osRef = new OSIRef(
         x + Math.floor(ref / 1000) * 100,
         y + (ref % 1000) * 100
       );
@@ -177,7 +177,7 @@ BIGU.GridRefParserIE.prototype.parse_gr_string_without_tetrads = function(gridRe
       break;
 
     case 8:
-      this.osRef = new BIGU.OSIRef(
+      this.osRef = new OSIRef(
         x + Math.floor(ref / 10000) * 10,
         y + (ref % 10000) * 10
       );
@@ -186,7 +186,7 @@ BIGU.GridRefParserIE.prototype.parse_gr_string_without_tetrads = function(gridRe
       break;
 
     case 10:
-      this.osRef = new BIGU.OSIRef(
+      this.osRef = new OSIRef(
         x + Math.floor(ref / 100000),
         y + (ref % 100000)
       );
@@ -202,3 +202,5 @@ BIGU.GridRefParserIE.prototype.parse_gr_string_without_tetrads = function(gridRe
   }
   return true;
 };
+
+export default GridRefParserIE;

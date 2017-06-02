@@ -6,16 +6,16 @@
  * @param {number} lng
  * @constructor
  */
-BIGU.OSGB36LatLng = function(lat, lng) {
+OSGB36LatLng = function(lat, lng) {
   this.lat = lat;
   this.lng = lng;
 };
 
 /**
  *
- * @returns {BIGU.WGS84LatLng}
+ * @returns {WGS84LatLng}
  */
-BIGU.OSGB36LatLng.prototype.to_WGS84 = function () {
+OSGB36LatLng.prototype.to_WGS84 = function () {
   //airy1830 = new RefEll(6377563.396, 6356256.909);
   var a        = 6377563.396; //airy1830.maj;
   //var b        = 6356256.909; //airy1830.min;
@@ -58,12 +58,12 @@ BIGU.OSGB36LatLng.prototype.to_WGS84 = function () {
   //this.lat = rad2deg * phiN;
   //this.lng = rad2deg * (Math.atan(yB / xB)); // lambdaB;
 
-  return new BIGU.WGS84LatLng(rad2deg * phiN, rad2deg * (Math.atan(yB / xB)));
+  return new WGS84LatLng(rad2deg * phiN, rad2deg * (Math.atan(yB / xB)));
 };
 
 
 //helper
-BIGU.OSGB36LatLng._Marc = function (bf0, n, phi0, phi) {
+OSGB36LatLng._Marc = function (bf0, n, phi0, phi) {
   return bf0 * (((1 + n + ((5 / 4) * (n * n)) + ((5 / 4) * (n * n * n))) * (phi - phi0))
     - (((3 * n) + (3 * (n * n)) + ((21 / 8) * (n * n * n))) * (Math.sin(phi - phi0)) * (Math.cos(phi + phi0)))
     + ((((15 / 8) * (n * n)) + ((15 / 8) * (n * n * n))) * (Math.sin(2 * (phi - phi0))) * (Math.cos(2 * (phi + phi0))))
@@ -71,7 +71,7 @@ BIGU.OSGB36LatLng._Marc = function (bf0, n, phi0, phi) {
 };
 
 //converts lat and lon (OSGB36) to OS northings and eastings
-BIGU.OSGB36LatLng.prototype.to_os_coords = function() {
+OSGB36LatLng.prototype.to_os_coords = function() {
   var phi = this.lat * deg2rad; // convert latitude to radians
   var lam = this.lng * deg2rad; // convert longitude to radians
   var a = 6377563.396; // OSGB semi-major axis
@@ -102,20 +102,20 @@ BIGU.OSGB36LatLng.prototype.to_os_coords = function() {
 
   // northing
   var n = (af0 - bf0) / (af0 + bf0);
-  var M = BIGU.OSGB36LatLng._Marc(bf0, n, phi0, phi);
+  var M = OSGB36LatLng._Marc(bf0, n, phi0, phi);
   var I = M + (n0);
   var II = (nu / 2) * Math.sin(phi) * Math.cos(phi);
   var III = ((nu / 24) * Math.sin(phi) * Math.pow(Math.cos(phi), 3)) * (5 - Math.pow(Math.tan(phi), 2) + (9 * eta2));
   var IIIA = ((nu / 720) * Math.sin(phi) * clat5) * (61 - (58 * tlat2) + tlat4);
   var north = I + ((p * p) * II) + (Math.pow(p, 4) * III) + (Math.pow(p, 6) * IIIA);
 
-  return new BIGU.OSRef(Math.round(east), Math.round(north));
+  return new OSRef(Math.round(east), Math.round(north));
 };
 
 
 
 //helper
-BIGU.OSGB36LatLng._Marc = function (bf0, n, phi0, phi) {
+OSGB36LatLng._Marc = function (bf0, n, phi0, phi) {
   return bf0 * (((1 + n + ((5 / 4) * (n * n)) + ((5 / 4) * (n * n * n))) * (phi - phi0))
     - (((3 * n) + (3 * (n * n)) + ((21 / 8) * (n * n * n))) * (Math.sin(phi - phi0)) * (Math.cos(phi + phi0)))
     + ((((15 / 8) * (n * n)) + ((15 / 8) * (n * n * n))) * (Math.sin(2 * (phi - phi0))) * (Math.cos(2 * (phi + phi0))))
@@ -123,7 +123,7 @@ BIGU.OSGB36LatLng._Marc = function (bf0, n, phi0, phi) {
 };
 
 //converts lat and lon (OSGB36) to OS northings and eastings
-BIGU.OSGB36LatLng.prototype.to_os_coords = function() {
+OSGB36LatLng.prototype.to_os_coords = function() {
   var phi = this.lat * deg2rad; // convert latitude to radians
   var lam = this.lng * deg2rad; // convert longitude to radians
   var a = 6377563.396; // OSGB semi-major axis
@@ -154,12 +154,14 @@ BIGU.OSGB36LatLng.prototype.to_os_coords = function() {
 
   // northing
   var n = (af0 - bf0) / (af0 + bf0);
-  var M = BIGU.OSGB36LatLng._Marc(bf0, n, phi0, phi);
+  var M = OSGB36LatLng._Marc(bf0, n, phi0, phi);
   var I = M + (n0);
   var II = (nu / 2) * Math.sin(phi) * Math.cos(phi);
   var III = ((nu / 24) * Math.sin(phi) * Math.pow(Math.cos(phi), 3)) * (5 - Math.pow(Math.tan(phi), 2) + (9 * eta2));
   var IIIA = ((nu / 720) * Math.sin(phi) * clat5) * (61 - (58 * tlat2) + tlat4);
   var north = I + ((p * p) * II) + (Math.pow(p, 4) * III) + (Math.pow(p, 6) * IIIA);
 
-  return new BIGU.OSRef(Math.round(east), Math.round(north));
+  return new OSRef(Math.round(east), Math.round(north));
 };
+
+export default OSGB36LatLng;

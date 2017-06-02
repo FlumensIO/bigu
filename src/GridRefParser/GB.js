@@ -2,12 +2,12 @@
 /**
  * @constructor
  */
-BIGU.GridRefParserGB = function() {};
+GridRefParserGB = function() {};
 
-BIGU.GridRefParserGB.prototype = new BIGU.GridRefParser();
-BIGU.GridRefParserGB.prototype.constructor = BIGU.GridRefParserGB;
-BIGU.GridRefParserGB.prototype.country = 'GB';
-BIGU.GridRefParserGB.prototype.NationalRef = BIGU.OSRef;
+GridRefParserGB.prototype = new GridRefParser();
+GridRefParserGB.prototype.constructor = GridRefParserGB;
+GridRefParserGB.prototype.country = 'GB';
+GridRefParserGB.prototype.NationalRef = OSRef;
 
 /**
  * gridref known to have correct syntax
@@ -16,12 +16,12 @@ BIGU.GridRefParserGB.prototype.NationalRef = BIGU.OSRef;
  * @param {string} rawGridRef
  * @throws GridRefException
  */
-BIGU.GridRefParserGB.prototype.parse_well_formed = function(rawGridRef) {
+GridRefParserGB.prototype.parse_well_formed = function(rawGridRef) {
 
   if (rawGridRef.length >= 5 && /^[A-Z]/.test(rawGridRef.charAt(4))) {
     // tetrad or quadrant
 
-    if (BIGU.GridRefParser.quadrantOffsets.hasOwnProperty(rawGridRef.substr(rawGridRef.length - 2))) {
+    if (GridRefParser.quadrantOffsets.hasOwnProperty(rawGridRef.substr(rawGridRef.length - 2))) {
       this.quadrantCode = rawGridRef.substr(rawGridRef.length - 2);
     } else {
       this.tetradLetter = rawGridRef.charAt(4);
@@ -39,14 +39,14 @@ BIGU.GridRefParserGB.prototype.parse_well_formed = function(rawGridRef) {
     if (this.tetradLetter) {
       this.preciseGridRef = this.tetrad = this.hectad + this.tetradLetter;
       this.length = 2000; // 2km square
-      this.osRef.x += BIGU.GridRefParser.tetradOffsets[this.tetradLetter][0];
-      this.osRef.y += BIGU.GridRefParser.tetradOffsets[this.tetradLetter][1];
+      this.osRef.x += GridRefParser.tetradOffsets[this.tetradLetter][0];
+      this.osRef.y += GridRefParser.tetradOffsets[this.tetradLetter][1];
     } else {
       // quadrant
       this.preciseGridRef = this.quadrant = rawGridRef + this.quadrantCode;
       this.length = 5000; // 5km square
-      this.osRef.x += BIGU.GridRefParser.quadrantOffsets[this.quadrantCode][0];
-      this.osRef.y += BIGU.GridRefParser.quadrantOffsets[this.quadrantCode][1];
+      this.osRef.x += GridRefParser.quadrantOffsets[this.quadrantCode][0];
+      this.osRef.y += GridRefParser.quadrantOffsets[this.quadrantCode][1];
     }
   } else {
     this.preciseGridRef = rawGridRef;
@@ -63,7 +63,7 @@ BIGU.GridRefParserGB.prototype.parse_well_formed = function(rawGridRef) {
  * @param {string} rawGridRef
  * @throws Error
  */
-BIGU.GridRefParserGB.prototype.parse = function(rawGridRef) {
+GridRefParserGB.prototype.parse = function(rawGridRef) {
   // grid ref may not be in canonical format
   var trimmedLocality = rawGridRef.replace(/[\[\]\s\t\.-]+/g, '').toUpperCase();
   var tetradCode = '';
@@ -72,7 +72,7 @@ BIGU.GridRefParserGB.prototype.parse = function(rawGridRef) {
   if (/[ABCDEFGHIJKLMNPQRSTUVWXYZ]$/.test(trimmedLocality)) {
     // tetrad or quadrant
 
-    if (BIGU.GridRefParser.quadrantOffsets.hasOwnProperty(trimmedLocality.substr(trimmedLocality.length - 2))) {
+    if (GridRefParser.quadrantOffsets.hasOwnProperty(trimmedLocality.substr(trimmedLocality.length - 2))) {
       this.quadrantCode = trimmedLocality.substr(trimmedLocality.length - 2);
       trimmedLocality = trimmedLocality.substr(0, trimmedLocality.length - 2);
     } else {
@@ -114,8 +114,8 @@ BIGU.GridRefParserGB.prototype.parse = function(rawGridRef) {
           this.tetradLetter = tetradCode;
           this.tetrad = this.hectad + tetradCode;
           this.length = 2000; // 2km square
-          this.osRef.x += BIGU.GridRefParser.tetradKmOffsets[tetradCode][0];
-          this.osRef.y += BIGU.GridRefParser.tetradKmOffsets[tetradCode][1];
+          this.osRef.x += GridRefParser.tetradKmOffsets[tetradCode][0];
+          this.osRef.y += GridRefParser.tetradKmOffsets[tetradCode][1];
         } else {
           // quadrant
           this.preciseGridRef = trimmedLocality + this.quadrantCode;
@@ -123,8 +123,8 @@ BIGU.GridRefParserGB.prototype.parse = function(rawGridRef) {
           this.tetrad = '';
           this.quadrant = this.preciseGridRef;
           this.length = 5000; // 5km square
-          this.osRef.x += BIGU.GridRefParser.quadrantOffsets[this.quadrantCode][0];
-          this.osRef.y += BIGU.GridRefParser.quadrantOffsets[this.quadrantCode][1];
+          this.osRef.x += GridRefParser.quadrantOffsets[this.quadrantCode][0];
+          this.osRef.y += GridRefParser.quadrantOffsets[this.quadrantCode][1];
         }
       } else {
         this.preciseGridRef = trimmedLocality;
@@ -154,14 +154,14 @@ BIGU.GridRefParserGB.prototype.parse = function(rawGridRef) {
           this.tetradLetter = tetradCode;
           this.tetrad = this.hectad + tetradCode;
           this.length = 2000; // 2km square
-          this.osRef.x += BIGU.GridRefParser.tetradOffsets[tetradCode][0];
-          this.osRef.y += BIGU.GridRefParser.tetradOffsets[tetradCode][1];
+          this.osRef.x += GridRefParser.tetradOffsets[tetradCode][0];
+          this.osRef.y += GridRefParser.tetradOffsets[tetradCode][1];
         } else if (this.quadrantCode) {
           trimmedLocality += this.quadrantCode;
           this.quadrant = trimmedLocality;
           this.length = 5000; // 5km square
-          this.osRef.x += BIGU.GridRefParser.quadrantOffsets[this.quadrantCode][0];
-          this.osRef.y += BIGU.GridRefParser.quadrantOffsets[this.quadrantCode][1];
+          this.osRef.x += GridRefParser.quadrantOffsets[this.quadrantCode][0];
+          this.osRef.y += GridRefParser.quadrantOffsets[this.quadrantCode][1];
         }
         break;
 
@@ -197,7 +197,7 @@ BIGU.GridRefParserGB.prototype.parse = function(rawGridRef) {
  *
  * @param {string} gridRef either nn/nn... or aann...
  */
-BIGU.GridRefParserGB.prototype.parse_gr_string_without_tetrads = function(gridRef) {
+GridRefParserGB.prototype.parse_gr_string_without_tetrads = function(gridRef) {
   var matches, x, y, ref;
 
   if ((matches = gridRef.match(/^(\d{2})\/((?:\d\d){1,5})$/)) !== null) {
@@ -240,15 +240,15 @@ BIGU.GridRefParserGB.prototype.parse_gr_string_without_tetrads = function(gridRe
     ref = matches[2];
   } else {
     // modern alphabetical sheet ref
-    if (!BIGU.GridRefParser.letterMapping.hasOwnProperty(gridRef.charAt(0)) || !BIGU.GridRefParser.letterMapping.hasOwnProperty(gridRef.charAt(1))) {
+    if (!GridRefParser.letterMapping.hasOwnProperty(gridRef.charAt(0)) || !GridRefParser.letterMapping.hasOwnProperty(gridRef.charAt(1))) {
       // invalid
       this.length = 0;
       this.osRef = null;
       return;
     }
 
-    var char1 = BIGU.GridRefParser.letterMapping[gridRef.charAt(0)];
-    var char2 = BIGU.GridRefParser.letterMapping[gridRef.charAt(1)];
+    var char1 = GridRefParser.letterMapping[gridRef.charAt(0)];
+    var char2 = GridRefParser.letterMapping[gridRef.charAt(1)];
     ref = gridRef.substr(2);
 
     x = ((char1 % 5) * 500000) + ((char2 % 5) * 100000) - 1000000;
@@ -257,7 +257,7 @@ BIGU.GridRefParserGB.prototype.parse_gr_string_without_tetrads = function(gridRe
 
   switch (ref.length) {
     case 2:
-      this.osRef = new BIGU.OSRef(
+      this.osRef = new OSRef(
         x + ref.charAt(0) * 10000, // use first digit of ref
         y + ref.charAt(1) * 10000 // use second digit of ref
       );
@@ -265,7 +265,7 @@ BIGU.GridRefParserGB.prototype.parse_gr_string_without_tetrads = function(gridRe
       break;
 
     case 4:
-      this.osRef = new BIGU.OSRef(
+      this.osRef = new OSRef(
         x + Math.floor(ref / 100) * 1000,
         y + (ref % 100) * 1000
       );
@@ -273,7 +273,7 @@ BIGU.GridRefParserGB.prototype.parse_gr_string_without_tetrads = function(gridRe
       break;
 
     case 6:
-      this.osRef = new BIGU.OSRef(
+      this.osRef = new OSRef(
         x + Math.floor(ref / 1000) * 100,
         y + (ref % 1000) * 100
       );
@@ -281,7 +281,7 @@ BIGU.GridRefParserGB.prototype.parse_gr_string_without_tetrads = function(gridRe
       break;
 
     case 8:
-      this.osRef = new BIGU.OSRef(
+      this.osRef = new OSRef(
         x + Math.floor(ref / 10000) * 10,
         y + (ref % 10000) * 10
       );
@@ -289,7 +289,7 @@ BIGU.GridRefParserGB.prototype.parse_gr_string_without_tetrads = function(gridRe
       break;
 
     case 10:
-      this.osRef = new BIGU.OSRef(
+      this.osRef = new OSRef(
         x + Math.floor(ref / 100000),
         y + (ref % 100000)
       );
@@ -313,12 +313,12 @@ BIGU.GridRefParserGB.prototype.parse_gr_string_without_tetrads = function(gridRe
  * @param {string} gridRef modern alpha-numeric format with no suffixes
  * @throws Error
  */
-BIGU.GridRefParserGB.prototype.parse_wellformed_gb_gr_string_no_tetrads = function(gridRef) {
+GridRefParserGB.prototype.parse_wellformed_gb_gr_string_no_tetrads = function(gridRef) {
   var char1, char2, ref, x, y;
 
   // modern alphabetical sheet refs only
-  char1 = BIGU.GridRefParser.letterMapping[gridRef.charAt(0)];
-  char2 = BIGU.GridRefParser.letterMapping[gridRef.charAt(1)];
+  char1 = GridRefParser.letterMapping[gridRef.charAt(0)];
+  char2 = GridRefParser.letterMapping[gridRef.charAt(1)];
   ref = gridRef.substr(2);
 
   x = ((char1 % 5) * 500000) + ((char2 % 5) * 100000) - 1000000;
@@ -326,7 +326,7 @@ BIGU.GridRefParserGB.prototype.parse_wellformed_gb_gr_string_no_tetrads = functi
 
   switch (ref.length) {
     case 2:
-      this.osRef = new BIGU.OSRef(
+      this.osRef = new OSRef(
         x + ref.charAt(0) * 10000, // use first digit of ref
         y + ref.charAt(1) * 10000 // use second digit of ref
       );
@@ -335,7 +335,7 @@ BIGU.GridRefParserGB.prototype.parse_wellformed_gb_gr_string_no_tetrads = functi
       break;
 
     case 4:
-      this.osRef = new BIGU.OSRef(
+      this.osRef = new OSRef(
         x + (Math.floor(ref / 100) * 1000),
         y + ((ref % 100) * 1000)
       );
@@ -344,7 +344,7 @@ BIGU.GridRefParserGB.prototype.parse_wellformed_gb_gr_string_no_tetrads = functi
       break;
 
     case 6:
-      this.osRef = new BIGU.OSRef(
+      this.osRef = new OSRef(
         x + (Math.floor(ref / 1000)) * 100,
         y + (ref % 1000) * 100
       );
@@ -353,7 +353,7 @@ BIGU.GridRefParserGB.prototype.parse_wellformed_gb_gr_string_no_tetrads = functi
       break;
 
     case 8:
-      this.osRef = new BIGU.OSRef(
+      this.osRef = new OSRef(
         x + (Math.floor(ref / 10000)) * 10,
         y + (ref % 10000) * 10
       );
@@ -362,7 +362,7 @@ BIGU.GridRefParserGB.prototype.parse_wellformed_gb_gr_string_no_tetrads = functi
       break;
 
     case 10:
-      this.osRef = new BIGU.OSRef(
+      this.osRef = new OSRef(
         x + Math.floor(ref / 100000),
         y + (ref % 100000)
       );
@@ -375,3 +375,5 @@ BIGU.GridRefParserGB.prototype.parse_wellformed_gb_gr_string_no_tetrads = functi
       throw new Error("Bad grid ref length when parsing supposedly well-formed ref, ref='" + gridRef + "'");
   }
 };
+
+export default GridRefParserGB;

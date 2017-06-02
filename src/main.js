@@ -1,17 +1,36 @@
-import 'GridRefParser/main';
-import 'CILatLng';
-import 'IELatLng';
-import 'LatLng';
-import 'MappingUtils';
-import 'NationalGridCoords';
-import 'OSCIRef';
-import 'OSGB36LatLng';
-import 'OSIRef';
-import 'OSRef';
-import 'WGS84LatLng';
+import GridRefParser from 'GridRefParser/main';
+import GridRefParserCI from 'GridRefParser/CI';
+import GridRefParserGB from 'GridRefParser/GB';
+import GridRefParserIR from 'GridRefParser/IE';
+import CILatLng from 'CILatLng';
+import IELatLng from 'IELatLng';
+import LatLng from 'LatLng';
+import MappingUtils from 'MappingUtils';
+import NationalGridCoords from 'NationalGridCoords';
+import OSCIRef from 'OSCIRef';
+import OSGB36LatLng from 'OSGB36LatLng';
+import OSIRef from 'OSIRef';
+import OSRef from 'OSRef';
+import WGS84LatLng from 'WGS84LatLng';
 
 
-var BIGU = BIGU || {scriptVersions: {}};
+var BIGU = {
+  GridRefParser,
+  GridRefParserCI,
+  GridRefParserGB,
+  GridRefParserIR,
+  LatLng,
+  CILatLng,
+  IELatLng,
+  MappingUtils,
+  NationalGridCoords,
+  OSCIRef,
+  OSGB36LatLng,
+  OSIRef,
+  OSRef,
+  WGS84LatLng,
+};
+
 BIGU.scriptVersions.gridref = '001';
 
 var deg2rad = Math.PI / 180;
@@ -77,3 +96,5 @@ BIGU.latlng_to_grid_coords = function(lat, lng) {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = BIGU;
 }
+
+export default BIGU;

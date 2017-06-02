@@ -5,9 +5,9 @@
  * (*not a gridref string*)
  *
  * @constructor
- * @returns {BIGU.NationalGridCoords}
+ * @returns {NationalGridCoords}
  */
-BIGU.NationalGridCoords = function () {};
+NationalGridCoords = function () {};
 
 /**
  *
@@ -17,14 +17,14 @@ BIGU.NationalGridCoords = function () {};
  * @param {number} precision metres
  * @returns {String}
  */
-BIGU.NationalGridCoords._e_n_to_gr = function(letters, e, n, precision) {
+NationalGridCoords._e_n_to_gr = function(letters, e, n, precision) {
   var eString = ('00000' + Math.floor(e));
   var nString = ('00000' + Math.floor(n));
 
   if (precision === 2000) {
     return letters +
       eString.charAt(eString.length-5) + nString.charAt(nString.length-5) +
-      BIGU.MappingUtils.calculate_tetrad(e, n);
+      MappingUtils.calculate_tetrad(e, n);
   } else if (precision === 100000) {
     return letters;
   } else {
@@ -43,6 +43,8 @@ BIGU.NationalGridCoords._e_n_to_gr = function(letters, e, n, precision) {
   }
 };
 
-BIGU.NationalGridCoords.prototype.toString = function() {
+NationalGridCoords.prototype.toString = function() {
   return this.x + ',' + this.y;
 };
+
+export default NationalGridCoords;

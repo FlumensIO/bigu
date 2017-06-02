@@ -1,16 +1,16 @@
-import './CI';
-import './GB';
-import './IE';
+import GridRefParserCI from './CI';
+import GridRefParserGB from './GB';
+import GridRefParserIE from './IE';
 /**
  * @constructor
  */
-BIGU.GridRefParser = function() {};
+GridRefParser = function() {};
 
 /**
  * x,y offsets (in metres) for tetrad letter codes
  * @type {Object.<string,Array.<number>>}
  */
-BIGU.GridRefParser.tetradOffsets = {
+GridRefParser.tetradOffsets = {
   E: [0,8000], J: [2000,8000], P: [4000,8000], U: [6000,8000], Z: [8000,8000],
   D: [0,6000], I: [2000,6000], N: [4000,6000], T: [6000,6000], Y: [8000,6000],
   C: [0,4000], H: [2000,4000], M: [4000,4000], S: [6000,4000], X: [8000,4000],
@@ -22,7 +22,7 @@ BIGU.GridRefParser.tetradOffsets = {
  * x,y offsets (in metres) for quadrant codes
  * @var array
  */
-BIGU.GridRefParser.quadrantOffsets = {
+GridRefParser.quadrantOffsets = {
   NW: [0,5000],
   NE: [5000,5000],
   SW: [0,0],
@@ -34,7 +34,7 @@ BIGU.GridRefParser.quadrantOffsets = {
  * 'I' is omitted
  * @var array
  */
-BIGU.GridRefParser.letterMapping = {
+GridRefParser.letterMapping = {
   A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7, J: 8, K: 9,
   L: 10, M: 11, N: 12, O: 13, P: 14, Q: 15, R: 16, S: 17, T: 18,
   U: 19, V: 20, W: 21, X: 22, Y: 23, Z: 24
@@ -48,52 +48,52 @@ BIGU.GridRefParser.letterMapping = {
  *
  * @var string
  */
-BIGU.GridRefParser.tetradLetters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ';
+GridRefParser.tetradLetters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ';
 
 /**
  *
  * @var string
  */
-BIGU.GridRefParser.prototype.preciseGridRef = '';
+GridRefParser.prototype.preciseGridRef = '';
 
 /**
  * Easting in m
  * @deprecated
  * @var real
  */
-//BIGU.GridRefParser.prototype.easting;
+//GridRefParser.prototype.easting;
 
 /**
  * Northing in m
  * @deprecated
  * @var real
  */
-//BIGU.GridRefParser.prototype.northing;
+//GridRefParser.prototype.northing;
 
 /**
  * length in m (0 marks an invalid value)
  *
  * @var number
  */
-BIGU.GridRefParser.prototype.length = 0;
+GridRefParser.prototype.length = 0;
 
 /**
  * @var string
  */
-BIGU.GridRefParser.prototype.hectad = '';
+GridRefParser.prototype.hectad = '';
 
 /**
  * 10km ref with tetrad suffix or ''
  * e.g. SD59A
  * @var string
  */
-BIGU.GridRefParser.prototype.tetrad = '';
+GridRefParser.prototype.tetrad = '';
 
 /**
  *
  * @var string
  */
-BIGU.GridRefParser.prototype.tetradLetter = '';
+GridRefParser.prototype.tetradLetter = '';
 
 /**
  * quadrant gridref(e.g. NZ34NW)
@@ -104,23 +104,23 @@ BIGU.GridRefParser.prototype.tetradLetter = '';
  *
  * @var string
  */
-BIGU.GridRefParser.prototype.quadrant = '';
+GridRefParser.prototype.quadrant = '';
 
 /**
  * quadrant code suffix(e.g. NW, NE, SW, SE)
  *
  * @var string
  */
-BIGU.GridRefParser.prototype.quadrantCode = '';
+GridRefParser.prototype.quadrantCode = '';
 
 /**
  * returns a GridRefParser (GB, IE or CI-specific parser) or false
  * crudely tries to determine the country by trying each country in turn
  *
  * @param {string} rawGridRef
- * @return BIGU.GridRefParser|FALSE
+ * @return GridRefParser|FALSE
  */
-BIGU.GridRefParser.factory = function(rawGridRef) {
+GridRefParser.factory = function(rawGridRef) {
   var parser;
   var cleanRef = rawGridRef.replace(/\s+/g, '').toUpperCase();
 
@@ -133,12 +133,12 @@ BIGU.GridRefParser.factory = function(rawGridRef) {
     // have simple well-formed grid ref
 
     if (/^.\d/.test(cleanRef)) {
-      parser = new BIGU.GridRefParserIE();
+      parser = new GridRefParserIE();
     } else {
       if (cleanRef.charAt(0) === 'W') {
-        parser = new BIGU.GridRefParserCI();
+        parser = new GridRefParserCI();
       } else {
-        parser = new BIGU.GridRefParserGB();
+        parser = new GridRefParserGB();
       }
     }
 
@@ -146,7 +146,7 @@ BIGU.GridRefParser.factory = function(rawGridRef) {
 
     return (parser.length && !parser.error) ? parser : false;
   } else {
-    parser = new BIGU.GridRefParserGB();
+    parser = new GridRefParserGB();
     parser.parse(cleanRef);
 
     if (parser.length && !parser.error) {
@@ -154,14 +154,14 @@ BIGU.GridRefParser.factory = function(rawGridRef) {
     }
 
     if (cleanRef.charAt(0) === 'W') {
-      parser = new BIGU.GridRefParserCI();
+      parser = new GridRefParserCI();
       parser.parse(cleanRef);
 
       if (parser.length && !parser.error) {
         return parser;
       }
     } else {
-      parser = new BIGU.GridRefParserIE();
+      parser = new GridRefParserIE();
       parser.parse(cleanRef);
 
       if (parser.length && !parser.error) {
@@ -172,7 +172,7 @@ BIGU.GridRefParser.factory = function(rawGridRef) {
   return false;
 };
 
-BIGU.GridRefParser.get_normalized_precision = function(rawPrecision, minPrecision) {
+GridRefParser.get_normalized_precision = function(rawPrecision, minPrecision) {
   return rawPrecision > 2000 ? 10000 :
     (rawPrecision > 1000 ? 2000 :
         (rawPrecision > 100 ? 1000 :
@@ -189,8 +189,8 @@ BIGU.GridRefParser.get_normalized_precision = function(rawPrecision, minPrecisio
  * update tetrad using Easting/Northing values (metres)
  * hectad should have been set prior to call
  */
-BIGU.GridRefParser.prototype.set_tetrad = function() {
-  this.tetradLetter = BIGU.GridRefParser.tetradLetters.substr(
+GridRefParser.prototype.set_tetrad = function() {
+  this.tetradLetter = GridRefParser.tetradLetters.substr(
     ((Math.floor((this.osRef.x % 10000) / 1000) >> 1) * 5) + (Math.floor((this.osRef.y % 10000) / 1000) >> 1)
     , 1);
 
@@ -199,3 +199,5 @@ BIGU.GridRefParser.prototype.set_tetrad = function() {
   }
   this.tetrad = this.hectad + this.tetradLetter;
 };
+
+export default GridRefParser;

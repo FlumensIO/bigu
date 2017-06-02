@@ -4,23 +4,23 @@
  * @param {number} easting metres
  * @param {number} northing metres
  * @constructor
- * @returns {BIGU.OSIRef}
+ * @returns {OSIRef}
  */
-BIGU.OSIRef = function(easting, northing) {
+OSIRef = function(easting, northing) {
   this.x = easting;
   this.y = northing;
 };
 
-BIGU.OSIRef.prototype = new BIGU.NationalGridCoords();
-BIGU.OSIRef.prototype.constructor = BIGU.OSIRef;
-BIGU.OSIRef.prototype.country = 'IE';
+OSIRef.prototype = new NationalGridCoords();
+OSIRef.prototype.constructor = OSIRef;
+OSIRef.prototype.country = 'IE';
 
 /**
  * convert easting,northing to a WGS84 lat lng
  *
- * @returns {BIGU.WGS84LatLng}
+ * @returns {WGS84LatLng}
  */
-BIGU.OSIRef.prototype.to_latLng = function() {
+OSIRef.prototype.to_latLng = function() {
   //converts OSI coords to lat/long.
 
   // modified from OSGBtoLL, Equations from USGS Bulletin 1532
@@ -105,26 +105,26 @@ BIGU.OSIRef.prototype.to_latLng = function() {
 
   Long = LongOrigin + Long * rad2deg;
 
-  //return new BIGU.LatLng(Lat, Long);
+  //return new LatLng(Lat, Long);
 
-  //var ll = new BIGU.IELatLng(Lat, Long); // Irish projection (modified Airy)
+  //var ll = new IELatLng(Lat, Long); // Irish projection (modified Airy)
   //ll.IE_to_WGS84(); // google earth uses WGS84
 
   //return ll;
 
-  return (new BIGU.IELatLng(Lat, Long)).IE_to_WGS84();
+  return (new IELatLng(Lat, Long)).IE_to_WGS84();
 };
 
-BIGU.OSIRef.prototype.to_gridref = function(precision) {
+OSIRef.prototype.to_gridref = function(precision) {
   var hundredkmE = Math.floor(this.x / 100000),
       hundredkmN = Math.floor(this.y / 100000);
-  if (BIGU.MappingUtils.irishGrid[hundredkmE] && BIGU.MappingUtils.irishGrid[hundredkmE][hundredkmN]) {
-    //var letter = BIGU.MappingUtils.irishGrid[hundredkmE][hundredkmN];
+  if (MappingUtils.irishGrid[hundredkmE] && MappingUtils.irishGrid[hundredkmE][hundredkmN]) {
+    //var letter = MappingUtils.irishGrid[hundredkmE][hundredkmN];
 
     //var eKm = '0' + Math.floor((this.x % 100000)/1000).toString();
     //var nKm = '0' + Math.floor((this.x % 100000)/1000).toString();
 
-    return BIGU.NationalGridCoords._e_n_to_gr(BIGU.MappingUtils.irishGrid[hundredkmE][hundredkmN],
+    return NationalGridCoords._e_n_to_gr(MappingUtils.irishGrid[hundredkmE][hundredkmN],
       (this.x - (100000 * hundredkmE)),
       (this.y - (100000 * hundredkmN)),
       precision ? precision : 1
@@ -133,3 +133,5 @@ BIGU.OSIRef.prototype.to_gridref = function(precision) {
     return null;
   }
 };
+
+export default OSIRef;
