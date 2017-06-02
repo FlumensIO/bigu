@@ -1,3 +1,5 @@
+import OSGB36LatLng from 'OSGB36LatLng';
+import WGS84LatLng from 'WGS84LatLng';
 
 /**
  * represents lat lng as Modified Airy (Irish grid projection)

@@ -1,3 +1,5 @@
+import OSCIRef from 'OSCIRef';
+import OSGB36LatLng from 'OSGB36LatLng';
 
 /**
  * represents lat lng as INT24 (CI grid projection)

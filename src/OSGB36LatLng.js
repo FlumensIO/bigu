@@ -1,3 +1,5 @@
+import WGS84LatLng from 'WGS84LatLng';
+import OSRef from 'OSRef';
 
 /**
  * represents lat lng as OSGB1936 (Ordnance Survey projection)

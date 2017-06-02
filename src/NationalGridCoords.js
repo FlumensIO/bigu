@@ -1,4 +1,4 @@
-
+import MappingUtils from 'MappingUtils';
 
 /**
  * abstract representation of a gridref co-ordinate pair

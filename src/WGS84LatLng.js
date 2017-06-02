@@ -1,4 +1,4 @@
-
+import CILatLng from 'CILatLng';
 /**
  * represents lat lng as WGS84 (google map form)
  *
