@@ -1,3 +1,5 @@
+import GridRefParser from './main';
+import OSRef from '../OSRef';
 
 /**
  * @constructor
