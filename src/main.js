@@ -1,4 +1,4 @@
-import GridRefParser from 'GridRefParser/main';
+import GridRefParser from 'GridRefParser/GridRefParser';
 import GridRefParserCI from 'GridRefParser/CI';
 import GridRefParserGB from 'GridRefParser/GB';
 import GridRefParserIR from 'GridRefParser/IE';

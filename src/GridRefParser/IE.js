@@ -1,4 +1,4 @@
-import GridRefParser from './main';
+import GridRefParser from './GridRefParser';
 import OSIRef from '../OSIRef';
 
 /**

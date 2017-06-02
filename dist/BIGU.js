@@ -70,9 +70,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _main = __webpack_require__(1);
+	var _GridRefParser = __webpack_require__(1);
 
-	var _main2 = _interopRequireDefault(_main);
+	var _GridRefParser2 = _interopRequireDefault(_GridRefParser);
 
 	var _CI = __webpack_require__(2);
 
@@ -129,7 +129,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var BIGU = {
-	  GridRefParser: _main2.default,
+	  GridRefParser: _GridRefParser2.default,
 	  GridRefParserCI: _CI2.default,
 	  GridRefParserGB: _GB2.default,
 	  GridRefParserIR: _IE2.default,
@@ -437,9 +437,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _main = __webpack_require__(1);
+	var _GridRefParser = __webpack_require__(1);
 
-	var _main2 = _interopRequireDefault(_main);
+	var _GridRefParser2 = _interopRequireDefault(_GridRefParser);
 
 	var _OSCIRef = __webpack_require__(3);
 
@@ -452,7 +452,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	var GridRefParserCI = function GridRefParserCI() {};
 
-	GridRefParserCI.prototype = new _main2.default();
+	GridRefParserCI.prototype = new _GridRefParser2.default();
 	GridRefParserCI.prototype.constructor = GridRefParserCI;
 	GridRefParserCI.prototype.country = 'CI';
 	GridRefParserCI.prototype.NationalRef = _OSCIRef2.default;
@@ -470,7 +470,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (/[ABCDEFGHIJKLMNPQRSTUVWXYZ]$/.test(trimmedLocality)) {
 	    // tetrad or quadrant
 
-	    if (_main2.default.quadrantOffsets.hasOwnProperty(trimmedLocality.substr(trimmedLocality.length - 2))) {
+	    if (_GridRefParser2.default.quadrantOffsets.hasOwnProperty(trimmedLocality.substr(trimmedLocality.length - 2))) {
 	      this.quadrantCode = trimmedLocality.substr(trimmedLocality.length - 2);
 	      trimmedLocality = trimmedLocality.substr(0, trimmedLocality.length - 2);
 	    } else {
@@ -492,8 +492,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          this.tetrad = this.hectad + tetradCode;
 	          this.tetradLetter = tetradCode;
 	          this.length = 2000; // 2km square
-	          this.osRef.x += _main2.default.tetradOffsets[tetradCode][0];
-	          this.osRef.y += _main2.default.tetradOffsets[tetradCode][1];
+	          this.osRef.x += _GridRefParser2.default.tetradOffsets[tetradCode][0];
+	          this.osRef.y += _GridRefParser2.default.tetradOffsets[tetradCode][1];
 	        } else {
 	          // quadrant
 	          this.preciseGridRef = trimmedLocality + this.quadrantCode;
@@ -501,8 +501,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          this.tetrad = '';
 	          this.quadrant = this.preciseGridRef;
 	          this.length = 5000; // 5km square
-	          this.osRef.x += _main2.default.quadrantOffsets[this.quadrantCode][0];
-	          this.osRef.y += _main2.default.quadrantOffsets[this.quadrantCode][1];
+	          this.osRef.x += _GridRefParser2.default.quadrantOffsets[this.quadrantCode][0];
+	          this.osRef.y += _GridRefParser2.default.quadrantOffsets[this.quadrantCode][1];
 	        }
 	      } else {
 	        this.preciseGridRef = trimmedLocality;
@@ -1059,9 +1059,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _main = __webpack_require__(1);
+	var _GridRefParser = __webpack_require__(1);
 
-	var _main2 = _interopRequireDefault(_main);
+	var _GridRefParser2 = _interopRequireDefault(_GridRefParser);
 
 	var _OSRef = __webpack_require__(7);
 
@@ -1074,7 +1074,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	var GridRefParserGB = function GridRefParserGB() {};
 
-	GridRefParserGB.prototype = new _main2.default();
+	GridRefParserGB.prototype = new _GridRefParser2.default();
 	GridRefParserGB.prototype.constructor = GridRefParserGB;
 	GridRefParserGB.prototype.country = 'GB';
 	GridRefParserGB.prototype.NationalRef = _OSRef2.default;
@@ -1091,7 +1091,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (rawGridRef.length >= 5 && /^[A-Z]/.test(rawGridRef.charAt(4))) {
 	    // tetrad or quadrant
 
-	    if (_main2.default.quadrantOffsets.hasOwnProperty(rawGridRef.substr(rawGridRef.length - 2))) {
+	    if (_GridRefParser2.default.quadrantOffsets.hasOwnProperty(rawGridRef.substr(rawGridRef.length - 2))) {
 	      this.quadrantCode = rawGridRef.substr(rawGridRef.length - 2);
 	    } else {
 	      this.tetradLetter = rawGridRef.charAt(4);
@@ -1109,14 +1109,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (this.tetradLetter) {
 	      this.preciseGridRef = this.tetrad = this.hectad + this.tetradLetter;
 	      this.length = 2000; // 2km square
-	      this.osRef.x += _main2.default.tetradOffsets[this.tetradLetter][0];
-	      this.osRef.y += _main2.default.tetradOffsets[this.tetradLetter][1];
+	      this.osRef.x += _GridRefParser2.default.tetradOffsets[this.tetradLetter][0];
+	      this.osRef.y += _GridRefParser2.default.tetradOffsets[this.tetradLetter][1];
 	    } else {
 	      // quadrant
 	      this.preciseGridRef = this.quadrant = rawGridRef + this.quadrantCode;
 	      this.length = 5000; // 5km square
-	      this.osRef.x += _main2.default.quadrantOffsets[this.quadrantCode][0];
-	      this.osRef.y += _main2.default.quadrantOffsets[this.quadrantCode][1];
+	      this.osRef.x += _GridRefParser2.default.quadrantOffsets[this.quadrantCode][0];
+	      this.osRef.y += _GridRefParser2.default.quadrantOffsets[this.quadrantCode][1];
 	    }
 	  } else {
 	    this.preciseGridRef = rawGridRef;
@@ -1142,7 +1142,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (/[ABCDEFGHIJKLMNPQRSTUVWXYZ]$/.test(trimmedLocality)) {
 	    // tetrad or quadrant
 
-	    if (_main2.default.quadrantOffsets.hasOwnProperty(trimmedLocality.substr(trimmedLocality.length - 2))) {
+	    if (_GridRefParser2.default.quadrantOffsets.hasOwnProperty(trimmedLocality.substr(trimmedLocality.length - 2))) {
 	      this.quadrantCode = trimmedLocality.substr(trimmedLocality.length - 2);
 	      trimmedLocality = trimmedLocality.substr(0, trimmedLocality.length - 2);
 	    } else {
@@ -1184,8 +1184,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          this.tetradLetter = tetradCode;
 	          this.tetrad = this.hectad + tetradCode;
 	          this.length = 2000; // 2km square
-	          this.osRef.x += _main2.default.tetradKmOffsets[tetradCode][0];
-	          this.osRef.y += _main2.default.tetradKmOffsets[tetradCode][1];
+	          this.osRef.x += _GridRefParser2.default.tetradKmOffsets[tetradCode][0];
+	          this.osRef.y += _GridRefParser2.default.tetradKmOffsets[tetradCode][1];
 	        } else {
 	          // quadrant
 	          this.preciseGridRef = trimmedLocality + this.quadrantCode;
@@ -1193,8 +1193,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          this.tetrad = '';
 	          this.quadrant = this.preciseGridRef;
 	          this.length = 5000; // 5km square
-	          this.osRef.x += _main2.default.quadrantOffsets[this.quadrantCode][0];
-	          this.osRef.y += _main2.default.quadrantOffsets[this.quadrantCode][1];
+	          this.osRef.x += _GridRefParser2.default.quadrantOffsets[this.quadrantCode][0];
+	          this.osRef.y += _GridRefParser2.default.quadrantOffsets[this.quadrantCode][1];
 	        }
 	      } else {
 	        this.preciseGridRef = trimmedLocality;
@@ -1224,14 +1224,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	          this.tetradLetter = tetradCode;
 	          this.tetrad = this.hectad + tetradCode;
 	          this.length = 2000; // 2km square
-	          this.osRef.x += _main2.default.tetradOffsets[tetradCode][0];
-	          this.osRef.y += _main2.default.tetradOffsets[tetradCode][1];
+	          this.osRef.x += _GridRefParser2.default.tetradOffsets[tetradCode][0];
+	          this.osRef.y += _GridRefParser2.default.tetradOffsets[tetradCode][1];
 	        } else if (this.quadrantCode) {
 	          trimmedLocality += this.quadrantCode;
 	          this.quadrant = trimmedLocality;
 	          this.length = 5000; // 5km square
-	          this.osRef.x += _main2.default.quadrantOffsets[this.quadrantCode][0];
-	          this.osRef.y += _main2.default.quadrantOffsets[this.quadrantCode][1];
+	          this.osRef.x += _GridRefParser2.default.quadrantOffsets[this.quadrantCode][0];
+	          this.osRef.y += _GridRefParser2.default.quadrantOffsets[this.quadrantCode][1];
 	        }
 	        break;
 
@@ -1310,15 +1310,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    ref = matches[2];
 	  } else {
 	    // modern alphabetical sheet ref
-	    if (!_main2.default.letterMapping.hasOwnProperty(gridRef.charAt(0)) || !_main2.default.letterMapping.hasOwnProperty(gridRef.charAt(1))) {
+	    if (!_GridRefParser2.default.letterMapping.hasOwnProperty(gridRef.charAt(0)) || !_GridRefParser2.default.letterMapping.hasOwnProperty(gridRef.charAt(1))) {
 	      // invalid
 	      this.length = 0;
 	      this.osRef = null;
 	      return;
 	    }
 
-	    var char1 = _main2.default.letterMapping[gridRef.charAt(0)];
-	    var char2 = _main2.default.letterMapping[gridRef.charAt(1)];
+	    var char1 = _GridRefParser2.default.letterMapping[gridRef.charAt(0)];
+	    var char2 = _GridRefParser2.default.letterMapping[gridRef.charAt(1)];
 	    ref = gridRef.substr(2);
 
 	    x = char1 % 5 * 500000 + char2 % 5 * 100000 - 1000000;
@@ -1374,8 +1374,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var char1, char2, ref, x, y;
 
 	  // modern alphabetical sheet refs only
-	  char1 = _main2.default.letterMapping[gridRef.charAt(0)];
-	  char2 = _main2.default.letterMapping[gridRef.charAt(1)];
+	  char1 = _GridRefParser2.default.letterMapping[gridRef.charAt(0)];
+	  char2 = _GridRefParser2.default.letterMapping[gridRef.charAt(1)];
 	  ref = gridRef.substr(2);
 
 	  x = char1 % 5 * 500000 + char2 % 5 * 100000 - 1000000;
@@ -1573,9 +1573,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _main = __webpack_require__(1);
+	var _GridRefParser = __webpack_require__(1);
 
-	var _main2 = _interopRequireDefault(_main);
+	var _GridRefParser2 = _interopRequireDefault(_GridRefParser);
 
 	var _OSIRef = __webpack_require__(9);
 
@@ -1588,7 +1588,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	var GridRefParserIE = function GridRefParserIE() {};
 
-	GridRefParserIE.prototype = new _main2.default();
+	GridRefParserIE.prototype = new _GridRefParser2.default();
 	GridRefParserIE.prototype.constructor = GridRefParserIE;
 	GridRefParserIE.prototype.country = 'IE';
 	GridRefParserIE.prototype.NationalRef = _OSIRef2.default;
@@ -1626,7 +1626,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (/[ABCDEFGHIJKLMNPQRSTUVWXYZ]$/.test(trimmedLocality)) {
 	    // tetrad or quadrant
 
-	    if (_main2.default.quadrantOffsets.hasOwnProperty(trimmedLocality.substr(trimmedLocality.length - 2))) {
+	    if (_GridRefParser2.default.quadrantOffsets.hasOwnProperty(trimmedLocality.substr(trimmedLocality.length - 2))) {
 	      this.quadrantCode = trimmedLocality.substr(trimmedLocality.length - 2);
 	      trimmedLocality = trimmedLocality.substr(0, trimmedLocality.length - 2);
 	    } else {
@@ -1645,15 +1645,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.preciseGridRef = this.hectad + this.tetradLetter;
 	        this.tetrad = this.preciseGridRef;
 	        this.length = 2000; // 2km square
-	        this.osRef.x += _main2.default.tetradOffsets[this.tetradLetter][0];
-	        this.osRef.y += _main2.default.tetradOffsets[this.tetradLetter][1];
+	        this.osRef.x += _GridRefParser2.default.tetradOffsets[this.tetradLetter][0];
+	        this.osRef.y += _GridRefParser2.default.tetradOffsets[this.tetradLetter][1];
 	      } else {
 	        // quadrant
 	        this.preciseGridRef = this.hectad + this.quadrantCode;
 	        this.quadrant = this.preciseGridRef;
 	        this.length = 5000; // 5km square
-	        this.osRef.x += _main2.default.quadrantOffsets[this.quadrantCode][0];
-	        this.osRef.y += _main2.default.quadrantOffsets[this.quadrantCode][1];
+	        this.osRef.x += _GridRefParser2.default.quadrantOffsets[this.quadrantCode][0];
+	        this.osRef.y += _GridRefParser2.default.quadrantOffsets[this.quadrantCode][1];
 	      }
 	    } else {
 	      this.preciseGridRef = trimmedLocality;
