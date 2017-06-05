@@ -1,6 +1,7 @@
 const path = require('path');
 const _ = require('underscore');
 const webpack = require('webpack');
+const CircularDependencyPlugin = require('circular-dependency-plugin');
 const pkg = require('./package.json');
 
 var filename = 'BIGU.js';
@@ -20,7 +21,8 @@ const plugins = [
   new webpack.DefinePlugin({
     LIB_VERSION: JSON.stringify(pkg.version),
   }),
-  new webpack.BannerPlugin(banner)
+  new webpack.BannerPlugin(banner),
+  new CircularDependencyPlugin(),
 ];
 
 if (uglify) {

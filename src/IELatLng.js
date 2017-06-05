@@ -1,5 +1,8 @@
 import OSGB36LatLng from 'OSGB36LatLng';
 import WGS84LatLng from 'WGS84LatLng';
+import OSIRef from 'OSIRef';
+import LatLng from 'LatLng';
+import { deg2rad, rad2deg } from 'constants';
 
 /**
  * represents lat lng as Modified Airy (Irish grid projection)

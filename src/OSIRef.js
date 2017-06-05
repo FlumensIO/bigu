@@ -1,4 +1,7 @@
 import NationalGridCoords from 'NationalGridCoords';
+import MappingUtils from 'MappingUtils';
+import IELatLng from 'IELatLng';
+import { rad2deg } from 'constants';
 
 /**
  *

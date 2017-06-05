@@ -1,5 +1,6 @@
 import WGS84LatLng from 'WGS84LatLng';
 import OSRef from 'OSRef';
+import { deg2rad, rad2deg } from 'constants';
 
 /**
  * represents lat lng as OSGB1936 (Ordnance Survey projection)

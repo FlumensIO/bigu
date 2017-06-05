@@ -1,4 +1,7 @@
 import NationalGridCoords from 'NationalGridCoords';
+import OSGB36LatLng from 'OSGB36LatLng';
+import MappingUtils from 'MappingUtils';
+import { rad2deg } from 'constants';
 
 /**
  *

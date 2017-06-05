@@ -70,27 +70,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _GridRefParser = __webpack_require__(1);
+	var _factory = __webpack_require__(1);
 
-	var _GridRefParser2 = _interopRequireDefault(_GridRefParser);
+	var _factory2 = _interopRequireDefault(_factory);
 
-	var _CI = __webpack_require__(2);
+	var _CI = __webpack_require__(3);
 
 	var _CI2 = _interopRequireDefault(_CI);
 
-	var _GB = __webpack_require__(6);
+	var _GB = __webpack_require__(15);
 
 	var _GB2 = _interopRequireDefault(_GB);
 
-	var _IE = __webpack_require__(8);
+	var _IE = __webpack_require__(16);
 
 	var _IE2 = _interopRequireDefault(_IE);
 
-	var _CILatLng = __webpack_require__(10);
+	var _CILatLng = __webpack_require__(8);
 
 	var _CILatLng2 = _interopRequireDefault(_CILatLng);
 
-	var _IELatLng = __webpack_require__(13);
+	var _IELatLng = __webpack_require__(12);
 
 	var _IELatLng2 = _interopRequireDefault(_IELatLng);
 
@@ -98,38 +98,41 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _LatLng2 = _interopRequireDefault(_LatLng);
 
-	var _MappingUtils = __webpack_require__(5);
+	var _MappingUtils = __webpack_require__(6);
 
 	var _MappingUtils2 = _interopRequireDefault(_MappingUtils);
 
-	var _NationalGridCoords = __webpack_require__(4);
+	var _NationalGridCoords = __webpack_require__(5);
 
 	var _NationalGridCoords2 = _interopRequireDefault(_NationalGridCoords);
 
-	var _OSCIRef = __webpack_require__(3);
+	var _OSCIRef = __webpack_require__(4);
 
 	var _OSCIRef2 = _interopRequireDefault(_OSCIRef);
 
-	var _OSGB36LatLng = __webpack_require__(11);
+	var _OSGB36LatLng = __webpack_require__(9);
 
 	var _OSGB36LatLng2 = _interopRequireDefault(_OSGB36LatLng);
 
-	var _OSIRef = __webpack_require__(9);
+	var _OSIRef = __webpack_require__(13);
 
 	var _OSIRef2 = _interopRequireDefault(_OSIRef);
 
-	var _OSRef = __webpack_require__(7);
+	var _OSRef = __webpack_require__(10);
 
 	var _OSRef2 = _interopRequireDefault(_OSRef);
 
-	var _WGS84LatLng = __webpack_require__(12);
+	var _WGS84LatLng = __webpack_require__(7);
 
 	var _WGS84LatLng2 = _interopRequireDefault(_WGS84LatLng);
+
+	__webpack_require__(17);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var BIGU = {
-	  GridRefParser: _GridRefParser2.default,
+	  scriptVersions: {},
+	  GridRefParser: _factory2.default,
 	  GridRefParserCI: _CI2.default,
 	  GridRefParserGB: _GB2.default,
 	  GridRefParserIR: _IE2.default,
@@ -146,27 +149,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	BIGU.scriptVersions.gridref = '001';
-
-	var deg2rad = Math.PI / 180;
-	var rad2deg = 180.0 / Math.PI;
-
-	/**
-	 * polyfill for browsers other than firefox
-	 */
-	if (!('asinh' in Math)) {
-	  Math.asinh = function (x) {
-	    return Math.log(x + Math.sqrt(x * x + 1));
-	  };
-	}
-
-	/**
-	 * polyfill for browsers other than firefox and chrome
-	 */
-	if (!('trunc' in Math)) {
-	  Math.trunc = function (x) {
-	    return x < 0 ? Math.ceil(x) : Math.floor(x);
-	  };
-	}
 
 	BIGU.scriptVersions.grParser = '002';
 
@@ -223,19 +205,94 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _CI = __webpack_require__(2);
+	var _GridRefParser = __webpack_require__(2);
+
+	var _GridRefParser2 = _interopRequireDefault(_GridRefParser);
+
+	var _CI = __webpack_require__(3);
 
 	var _CI2 = _interopRequireDefault(_CI);
 
-	var _GB = __webpack_require__(6);
+	var _GB = __webpack_require__(15);
 
 	var _GB2 = _interopRequireDefault(_GB);
 
-	var _IE = __webpack_require__(8);
+	var _IE = __webpack_require__(16);
 
 	var _IE2 = _interopRequireDefault(_IE);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * returns a GridRefParser (GB, IE or CI-specific parser) or false
+	 * crudely tries to determine the country by trying each country in turn
+	 *
+	 * @param {string} rawGridRef
+	 * @return GridRefParser|FALSE
+	 */
+	_GridRefParser2.default.factory = function (rawGridRef) {
+	  var parser;
+	  var cleanRef = rawGridRef.replace(/\s+/g, '').toUpperCase();
+
+	  if (!cleanRef) {
+	    return false;
+	  }
+
+	  // if canonical ref form then be more efficient
+	  if (/^[A-Z]{1,2}\d{2}(?:[A-Z]|[NS][EW]|(?:\d{2}){0,4})?$/.test(cleanRef)) {
+	    // have simple well-formed grid ref
+
+	    if (/^.\d/.test(cleanRef)) {
+	      parser = new _IE2.default();
+	    } else {
+	      if (cleanRef.charAt(0) === 'W') {
+	        parser = new _CI2.default();
+	      } else {
+	        parser = new _GB2.default();
+	      }
+	    }
+
+	    parser.parse_well_formed(cleanRef);
+
+	    return parser.length && !parser.error ? parser : false;
+	  } else {
+	    parser = new _GB2.default();
+	    parser.parse(cleanRef);
+
+	    if (parser.length && !parser.error) {
+	      return parser;
+	    }
+
+	    if (cleanRef.charAt(0) === 'W') {
+	      parser = new _CI2.default();
+	      parser.parse(cleanRef);
+
+	      if (parser.length && !parser.error) {
+	        return parser;
+	      }
+	    } else {
+	      parser = new _IE2.default();
+	      parser.parse(cleanRef);
+
+	      if (parser.length && !parser.error) {
+	        return parser;
+	      }
+	    }
+	  }
+	  return false;
+	};
+
+	exports.default = _GridRefParser2.default;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	/**
 	 * @constructor
@@ -350,69 +407,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	GridRefParser.prototype.quadrantCode = '';
 
 	/**
-	 * returns a GridRefParser (GB, IE or CI-specific parser) or false
-	 * crudely tries to determine the country by trying each country in turn
-	 *
-	 * @param {string} rawGridRef
-	 * @return GridRefParser|FALSE
-	 */
-	GridRefParser.factory = function (rawGridRef) {
-	  var parser;
-	  var cleanRef = rawGridRef.replace(/\s+/g, '').toUpperCase();
-
-	  if (!cleanRef) {
-	    return false;
-	  }
-
-	  // if canonical ref form then be more efficient
-	  if (/^[A-Z]{1,2}\d{2}(?:[A-Z]|[NS][EW]|(?:\d{2}){0,4})?$/.test(cleanRef)) {
-	    // have simple well-formed grid ref
-
-	    if (/^.\d/.test(cleanRef)) {
-	      parser = new _IE2.default();
-	    } else {
-	      if (cleanRef.charAt(0) === 'W') {
-	        parser = new _CI2.default();
-	      } else {
-	        parser = new _GB2.default();
-	      }
-	    }
-
-	    parser.parse_well_formed(cleanRef);
-
-	    return parser.length && !parser.error ? parser : false;
-	  } else {
-	    parser = new _GB2.default();
-	    parser.parse(cleanRef);
-
-	    if (parser.length && !parser.error) {
-	      return parser;
-	    }
-
-	    if (cleanRef.charAt(0) === 'W') {
-	      parser = new _CI2.default();
-	      parser.parse(cleanRef);
-
-	      if (parser.length && !parser.error) {
-	        return parser;
-	      }
-	    } else {
-	      parser = new _IE2.default();
-	      parser.parse(cleanRef);
-
-	      if (parser.length && !parser.error) {
-	        return parser;
-	      }
-	    }
-	  }
-	  return false;
-	};
-
-	GridRefParser.get_normalized_precision = function (rawPrecision, minPrecision) {
-	  return rawPrecision > 2000 ? 10000 : rawPrecision > 1000 ? 2000 : rawPrecision > 100 ? 1000 : rawPrecision > 10 ? 100 : rawPrecision > 1 ? 10 : minPrecision ? minPrecision : 1;
-	};
-
-	/**
 	 * update tetrad using Easting/Northing values (metres)
 	 * hectad should have been set prior to call
 	 */
@@ -425,10 +419,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  this.tetrad = this.hectad + this.tetradLetter;
 	};
 
+	GridRefParser.get_normalized_precision = function (rawPrecision, minPrecision) {
+	  return rawPrecision > 2000 ? 10000 : rawPrecision > 1000 ? 2000 : rawPrecision > 100 ? 1000 : rawPrecision > 10 ? 100 : rawPrecision > 1 ? 10 : minPrecision ? minPrecision : 1;
+	};
+
 	exports.default = GridRefParser;
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -437,11 +435,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _GridRefParser = __webpack_require__(1);
+	var _GridRefParser = __webpack_require__(2);
 
 	var _GridRefParser2 = _interopRequireDefault(_GridRefParser);
 
-	var _OSCIRef = __webpack_require__(3);
+	var _OSCIRef = __webpack_require__(4);
 
 	var _OSCIRef2 = _interopRequireDefault(_OSCIRef);
 
@@ -593,7 +591,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = GridRefParserCI;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -602,9 +600,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _NationalGridCoords = __webpack_require__(4);
+	var _NationalGridCoords = __webpack_require__(5);
 
 	var _NationalGridCoords2 = _interopRequireDefault(_NationalGridCoords);
+
+	var _WGS84LatLng = __webpack_require__(7);
+
+	var _WGS84LatLng2 = _interopRequireDefault(_WGS84LatLng);
+
+	var _LatLng = __webpack_require__(14);
+
+	var _LatLng2 = _interopRequireDefault(_LatLng);
+
+	var _constants = __webpack_require__(11);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -640,7 +648,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var f0 = 0.9996; // INT24 ED50 scale factor on central meridian
 	  var e2 = 0.0067226700223333; // INT24 ED50 eccentricity squared
 	  var lam0 = -0.0523598775598; // INT24 ED50 false east
-	  var phi0 = 0 * deg2rad; // INT24 ED50 false north
+	  var phi0 = 0 * _constants.deg2rad; // INT24 ED50 false north
 
 	  var af0 = a * f0;
 	  var bf0 = b * f0;
@@ -666,7 +674,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  var latLngRadians = OSCIRef.convert_to_wgs(phip, lambdap);
 
-	  return new WGS84LatLng(latLngRadians.lat * rad2deg, latLngRadians.lng * rad2deg);
+	  return new _WGS84LatLng2.default(latLngRadians.lat * _constants.rad2deg, latLngRadians.lng * _constants.rad2deg);
 	};
 
 	OSCIRef.convert_to_wgs = function (phip, lambdap) {
@@ -679,7 +687,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var INT24_AXIS = 6378388.000;
 	  var INT24_ECCENTRIC = 0.0067226700223333;
 	  var height = 10; // dummy height
-	  return LatLng.transform(phip, lambdap, INT24_AXIS, INT24_ECCENTRIC, height, WGS84_AXIS, WGS84_ECCENTRIC, -83.901, -98.127, -118.635, 0, 0, 0, 0);
+	  return _LatLng2.default.transform(phip, lambdap, INT24_AXIS, INT24_ECCENTRIC, height, WGS84_AXIS, WGS84_ECCENTRIC, -83.901, -98.127, -118.635, 0, 0, 0, 0);
 	};
 
 	OSCIRef.initialLat = function (north, n0, af0, phi0, n, bf0) {
@@ -713,7 +721,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = OSCIRef;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -722,7 +730,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _MappingUtils = __webpack_require__(5);
+	var _MappingUtils = __webpack_require__(6);
 
 	var _MappingUtils2 = _interopRequireDefault(_MappingUtils);
 
@@ -771,7 +779,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = NationalGridCoords;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -780,7 +788,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _NationalGridCoords = __webpack_require__(4);
+	var _NationalGridCoords = __webpack_require__(5);
 
 	var _NationalGridCoords2 = _interopRequireDefault(_NationalGridCoords);
 
@@ -1050,7 +1058,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = MappingUtils;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1059,11 +1067,939 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _GridRefParser = __webpack_require__(1);
+	var _CILatLng = __webpack_require__(8);
+
+	var _CILatLng2 = _interopRequireDefault(_CILatLng);
+
+	var _IELatLng = __webpack_require__(12);
+
+	var _IELatLng2 = _interopRequireDefault(_IELatLng);
+
+	var _LatLng = __webpack_require__(14);
+
+	var _LatLng2 = _interopRequireDefault(_LatLng);
+
+	var _OSGB36LatLng = __webpack_require__(9);
+
+	var _OSGB36LatLng2 = _interopRequireDefault(_OSGB36LatLng);
+
+	var _constants = __webpack_require__(11);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * represents lat lng as WGS84 (google map form)
+	 *
+	 * @param {number} lat
+	 * @param {number} lng
+	 * @constructor
+	 */
+	var WGS84LatLng = function WGS84LatLng(lat, lng) {
+	  this.lat = lat;
+	  this.lng = lng;
+	};
+
+	WGS84LatLng.prototype.to_OSGB1936_latlng = function () {
+	  //var deg2rad = Math.PI / 180;
+	  //var rad2deg = 180.0 / Math.PI;
+
+	  //first off convert to radians
+	  var radWGlat = this.lat * _constants.deg2rad;
+	  var radWGlon = this.lng * _constants.deg2rad;
+	  //these are the values for WGS84(GRS80) to OSGB36(Airy)
+	  var a = 6378137; // WGS84_AXIS
+	  var e = 0.00669438037928458; // WGS84_ECCENTRIC
+	  //var h = height; // height above datum (from GPGGA sentence)
+	  var h = 0;
+	  var a2 = 6377563.396; // OSGB_AXIS
+	  var e2 = 0.0066705397616; // OSGB_ECCENTRIC
+	  var xp = -446.448;
+	  var yp = 125.157;
+	  var zp = -542.06;
+	  var xr = -0.1502;
+	  var yr = -0.247;
+	  var zr = -0.8421;
+	  var s = 20.4894;
+
+	  // convert to cartesian; lat, lon are in radians
+	  var sf = s * 0.000001;
+	  var v = a / Math.sqrt(1 - e * Math.sin(radWGlat) * Math.sin(radWGlat));
+	  var x = (v + h) * Math.cos(radWGlat) * Math.cos(radWGlon);
+	  var y = (v + h) * Math.cos(radWGlat) * Math.sin(radWGlon);
+	  var z = ((1 - e) * v + h) * Math.sin(radWGlat);
+
+	  // transform cartesian
+	  var xrot = xr / 3600 * _constants.deg2rad;
+	  var yrot = yr / 3600 * _constants.deg2rad;
+	  var zrot = zr / 3600 * _constants.deg2rad;
+	  var hx = x + x * sf - y * zrot + z * yrot + xp;
+	  var hy = x * zrot + y + y * sf - z * xrot + yp;
+	  var hz = -1 * x * yrot + y * xrot + z + z * sf + zp;
+
+	  // Convert back to lat, lon
+	  var newLon = Math.atan(hy / hx);
+	  var p = Math.sqrt(hx * hx + hy * hy);
+	  var newLat = Math.atan(hz / (p * (1 - e2)));
+	  v = a2 / Math.sqrt(1 - e2 * (Math.sin(newLat) * Math.sin(newLat)));
+	  var errvalue = 1.0;
+	  var lat0 = 0;
+	  while (errvalue > 0.001) {
+	    lat0 = Math.atan((hz + e2 * v * Math.sin(newLat)) / p);
+	    errvalue = Math.abs(lat0 - newLat);
+	    newLat = lat0;
+	  }
+
+	  //convert back to degrees
+	  newLat = newLat * _constants.rad2deg;
+	  newLon = newLon * _constants.rad2deg;
+
+	  return new _OSGB36LatLng2.default(newLat, newLon);
+	};
+
+	WGS84LatLng.prototype.to_IE_latlng = function () {
+	  var phip = this.lat * _constants.deg2rad;
+	  var lambdap = this.lng * _constants.deg2rad;
+
+	  var IRISH_AXIS = 6377340.189;
+	  var IRISH_ECCENTRIC = 0.00667054015;
+
+	  var WGS84_AXIS = 6378137;
+	  var WGS84_ECCENTRIC = 0.00669438037928458;
+
+	  /*
+	   * IE
+	   a = 6377340.189;      // OSI semi-major
+	   b = 6356034.447;      // OSI semi-minor
+	   e0 = 200000;          // OSI easting of false origin
+	   n0 = 250000;          // OSI northing of false origin
+	   f0 = 1.000035;        // OSI scale factor on central meridian
+	   e2 = 0.00667054015;   // OSI eccentricity squared
+	   lam0 = -0.13962634015954636615389526147909;   // OSI false east
+	   phi0 = 0.93375114981696632365417456114141;    // OSI false north
+	   */
+
+	  var height = 0;
+	  var latlng = _LatLng2.default.transform(phip, lambdap, WGS84_AXIS, WGS84_ECCENTRIC, height, IRISH_AXIS, IRISH_ECCENTRIC, -482.53, 130.596, -564.557, 1.042, 0.214, 0.631, 8.15);
+
+	  return new _IELatLng2.default(latlng.lat * _constants.rad2deg, latlng.lng * _constants.rad2deg);
+	};
+
+	WGS84LatLng.prototype.to_CI_latlng = function () {
+	  var phip = this.lat * _constants.deg2rad;
+	  var lambdap = this.lng * _constants.deg2rad;
+
+	  var CI_AXIS = 6378388.000;
+	  var CI_ECCENTRIC = 0.0067226700223333;
+
+	  var WGS84_AXIS = 6378137;
+	  var WGS84_ECCENTRIC = 0.00669438037928458;
+
+	  /*
+	   * CI
+	   a = 6378388.000;       // INT24 ED50 semi-major
+	   b = 6356911.946;       // INT24 ED50 semi-minor
+	   e0 = 500000;           // CI easting of false origin
+	   n0 = 0;                // CI northing of false origin
+	   f0 = 0.9996;           // INT24 ED50 scale factor on central meridian
+	   e2 = 0.0067226700223333;  // INT24 ED50 eccentricity squared
+	   lam0 = -0.0523598775598;  // CI false east
+	   phi0 = 0 * deg2rad;       // CI false north
+	   */
+
+	  var height = 0;
+	  var latlng = _LatLng2.default.transform(phip, lambdap, WGS84_AXIS, WGS84_ECCENTRIC, height, CI_AXIS, CI_ECCENTRIC, 83.901, 98.127, 118.635, 0, 0, 0, 0);
+
+	  return new _CILatLng2.default(latlng.lat * _constants.rad2deg, latlng.lng * _constants.rad2deg);
+	};
+
+	exports.default = WGS84LatLng;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _OSCIRef = __webpack_require__(4);
+
+	var _OSCIRef2 = _interopRequireDefault(_OSCIRef);
+
+	var _OSGB36LatLng = __webpack_require__(9);
+
+	var _OSGB36LatLng2 = _interopRequireDefault(_OSGB36LatLng);
+
+	var _constants = __webpack_require__(11);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * represents lat lng as INT24 (CI grid projection)
+	 *
+	 * @constructor
+	 * @param {number} lat
+	 * @param {number} lng
+	 */
+	var CILatLng = function CILatLng(lat, lng) {
+	  this.lat = lat;
+	  this.lng = lng;
+	};
+
+	/**
+	 * converts lat and lon to CI northings and eastings
+	 *
+	 * @returns OSCIRef
+	 */
+	CILatLng.prototype.to_os_coords = function () {
+	  //var deg2rad = Math.PI / 180;
+	  //var rad2deg = 180.0 / Math.PI;
+
+	  var phi = this.lat * _constants.deg2rad; // convert latitude to radians
+	  var lam = this.lng * _constants.deg2rad; // convert longitude to radians
+	  var a = 6378388.000; // OSI semi-major
+	  var b = 6356911.946; // OSI semi-minor
+	  var e0 = 500000; // OSI easting of false origin
+	  var n0 = 0; // OSI northing of false origin
+	  var f0 = 0.9996; // OSI scale factor on central meridian
+	  var e2 = 0.0067226700223333; // OSI eccentricity squared
+	  var lam0 = -0.0523598775598; // OSI false east
+	  var phi0 = 0; // OSI false north
+	  var af0 = a * f0;
+	  var bf0 = b * f0;
+
+	  // easting
+	  var slat2 = Math.sin(phi) * Math.sin(phi);
+	  var nu = af0 / Math.sqrt(1 - e2 * slat2);
+	  var rho = nu * (1 - e2) / (1 - e2 * slat2);
+	  var eta2 = nu / rho - 1;
+	  var p = lam - lam0;
+	  var IV = nu * Math.cos(phi);
+	  var clat3 = Math.pow(Math.cos(phi), 3);
+	  var tlat2 = Math.tan(phi) * Math.tan(phi);
+	  var V = nu / 6 * clat3 * (nu / rho - tlat2);
+	  var clat5 = Math.pow(Math.cos(phi), 5);
+	  var tlat4 = Math.pow(Math.tan(phi), 4);
+	  var VI = nu / 120 * clat5 * (5 - 18 * tlat2 + tlat4 + 14 * eta2 - 58 * tlat2 * eta2);
+	  var east = e0 + p * IV + Math.pow(p, 3) * V + Math.pow(p, 5) * VI;
+
+	  // northing
+	  var n = (af0 - bf0) / (af0 + bf0);
+	  var M = _OSGB36LatLng2.default._Marc(bf0, n, phi0, phi);
+	  var I = M + n0;
+	  var II = nu / 2 * Math.sin(phi) * Math.cos(phi);
+	  var III = nu / 24 * Math.sin(phi) * Math.pow(Math.cos(phi), 3) * (5 - Math.pow(Math.tan(phi), 2) + 9 * eta2);
+	  var IIIA = nu / 720 * Math.sin(phi) * clat5 * (61 - 58 * tlat2 + tlat4);
+	  var north = I + p * p * II + Math.pow(p, 4) * III + Math.pow(p, 6) * IIIA;
+
+	  //return {x: Math.round(east), y: Math.round(north)};
+	  return new _OSCIRef2.default(Math.round(east), Math.round(north));
+	};
+
+	exports.default = CILatLng;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _WGS84LatLng = __webpack_require__(7);
+
+	var _WGS84LatLng2 = _interopRequireDefault(_WGS84LatLng);
+
+	var _OSRef = __webpack_require__(10);
+
+	var _OSRef2 = _interopRequireDefault(_OSRef);
+
+	var _constants = __webpack_require__(11);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * represents lat lng as OSGB1936 (Ordnance Survey projection)
+	 *
+	 * @param {number} lat
+	 * @param {number} lng
+	 * @constructor
+	 */
+	var OSGB36LatLng = function OSGB36LatLng(lat, lng) {
+	  this.lat = lat;
+	  this.lng = lng;
+	};
+
+	/**
+	 *
+	 * @returns {WGS84LatLng}
+	 */
+	OSGB36LatLng.prototype.to_WGS84 = function () {
+	  //airy1830 = new RefEll(6377563.396, 6356256.909);
+	  var a = 6377563.396; //airy1830.maj;
+	  //var b        = 6356256.909; //airy1830.min;
+	  var eSquared = 0.00667054007; // ((maj * maj) - (min * min)) / (maj * maj); // airy1830.ecc;
+	  var phi = this.lat * _constants.deg2rad; // (Math.PI / 180)(this.lat);
+	  var sinPhi = Math.sin(phi);
+	  var lambda = this.lng * _constants.deg2rad; // (Math.PI / 180)(this.lng);
+	  var v = a / Math.sqrt(1 - eSquared * (sinPhi * sinPhi));
+	  //H = 0; // height
+	  var x = v * Math.cos(phi) * Math.cos(lambda);
+	  var y = v * Math.cos(phi) * Math.sin(lambda);
+	  var z = (1 - eSquared) * v * sinPhi;
+
+	  var tx = 446.448;
+	  var ty = -124.157;
+	  var tz = 542.060;
+	  var s = -0.0000204894;
+	  var rx = 0.000000728190110241429; // (Math.PI / 180)( 0.00004172222);
+	  var ry = 0.000001197489772948010; // (Math.PI / 180)( 0.00006861111);
+	  var rz = 0.000004082615892268120; // (Math.PI / 180)( 0.00023391666);
+
+	  var xB = tx + x * (1 + s) + -rx * y + ry * z;
+	  var yB = ty + rz * x + y * (1 + s) + -rx * z;
+	  var zB = tz + -ry * x + rx * y + z * (1 + s);
+
+	  //wgs84 = new RefEll(6378137.000, 6356752.3141);
+	  a = 6378137.000; // wgs84.maj;
+	  //var b        = 6356752.3141; // wgs84.min;
+	  eSquared = 0.00669438003; // ((maj * maj) - (min * min)) / (maj * maj); //wgs84.ecc;
+
+	  //lambdaB = (180 / Math.PI)(Math.atan(yB / xB));
+	  var p = Math.sqrt(xB * xB + yB * yB);
+	  var phiN = Math.atan(zB / (p * (1 - eSquared)));
+
+	  for (var i = 1; i < 10; ++i) {
+	    var sinPhiN = Math.sin(phiN); // this must be in the for loop as phiN is variable
+	    phiN = Math.atan((zB + eSquared * (a / Math.sqrt(1 - eSquared * (sinPhiN * sinPhiN))) * sinPhiN) / p);
+	  }
+
+	  //this.lat = rad2deg * phiN;
+	  //this.lng = rad2deg * (Math.atan(yB / xB)); // lambdaB;
+
+	  return new _WGS84LatLng2.default(_constants.rad2deg * phiN, _constants.rad2deg * Math.atan(yB / xB));
+	};
+
+	//helper
+	OSGB36LatLng._Marc = function (bf0, n, phi0, phi) {
+	  return bf0 * ((1 + n + 5 / 4 * (n * n) + 5 / 4 * (n * n * n)) * (phi - phi0) - (3 * n + 3 * (n * n) + 21 / 8 * (n * n * n)) * Math.sin(phi - phi0) * Math.cos(phi + phi0) + (15 / 8 * (n * n) + 15 / 8 * (n * n * n)) * Math.sin(2 * (phi - phi0)) * Math.cos(2 * (phi + phi0)) - 35 / 24 * (n * n * n) * Math.sin(3 * (phi - phi0)) * Math.cos(3 * (phi + phi0)));
+	};
+
+	//converts lat and lon (OSGB36) to OS northings and eastings
+	OSGB36LatLng.prototype.to_os_coords = function () {
+	  var phi = this.lat * _constants.deg2rad; // convert latitude to radians
+	  var lam = this.lng * _constants.deg2rad; // convert longitude to radians
+	  var a = 6377563.396; // OSGB semi-major axis
+	  var b = 6356256.91; // OSGB semi-minor axis
+	  var e0 = 400000; // easting of false origin
+	  var n0 = -100000; // northing of false origin
+	  var f0 = 0.9996012717; // OSGB scale factor on central meridian
+	  var e2 = 0.0066705397616; // OSGB eccentricity squared
+	  var lam0 = -0.034906585039886591; // OSGB false east
+	  var phi0 = 0.85521133347722145; // OSGB false north
+	  var af0 = a * f0;
+	  var bf0 = b * f0;
+
+	  // easting
+	  var slat2 = Math.sin(phi) * Math.sin(phi);
+	  var nu = af0 / Math.sqrt(1 - e2 * slat2);
+	  var rho = nu * (1 - e2) / (1 - e2 * slat2);
+	  var eta2 = nu / rho - 1;
+	  var p = lam - lam0;
+	  var IV = nu * Math.cos(phi);
+	  var clat3 = Math.pow(Math.cos(phi), 3);
+	  var tlat2 = Math.tan(phi) * Math.tan(phi);
+	  var V = nu / 6 * clat3 * (nu / rho - tlat2);
+	  var clat5 = Math.pow(Math.cos(phi), 5);
+	  var tlat4 = Math.pow(Math.tan(phi), 4);
+	  var VI = nu / 120 * clat5 * (5 - 18 * tlat2 + tlat4 + 14 * eta2 - 58 * tlat2 * eta2);
+	  var east = e0 + p * IV + Math.pow(p, 3) * V + Math.pow(p, 5) * VI;
+
+	  // northing
+	  var n = (af0 - bf0) / (af0 + bf0);
+	  var M = OSGB36LatLng._Marc(bf0, n, phi0, phi);
+	  var I = M + n0;
+	  var II = nu / 2 * Math.sin(phi) * Math.cos(phi);
+	  var III = nu / 24 * Math.sin(phi) * Math.pow(Math.cos(phi), 3) * (5 - Math.pow(Math.tan(phi), 2) + 9 * eta2);
+	  var IIIA = nu / 720 * Math.sin(phi) * clat5 * (61 - 58 * tlat2 + tlat4);
+	  var north = I + p * p * II + Math.pow(p, 4) * III + Math.pow(p, 6) * IIIA;
+
+	  return new _OSRef2.default(Math.round(east), Math.round(north));
+	};
+
+	//helper
+	OSGB36LatLng._Marc = function (bf0, n, phi0, phi) {
+	  return bf0 * ((1 + n + 5 / 4 * (n * n) + 5 / 4 * (n * n * n)) * (phi - phi0) - (3 * n + 3 * (n * n) + 21 / 8 * (n * n * n)) * Math.sin(phi - phi0) * Math.cos(phi + phi0) + (15 / 8 * (n * n) + 15 / 8 * (n * n * n)) * Math.sin(2 * (phi - phi0)) * Math.cos(2 * (phi + phi0)) - 35 / 24 * (n * n * n) * Math.sin(3 * (phi - phi0)) * Math.cos(3 * (phi + phi0)));
+	};
+
+	//converts lat and lon (OSGB36) to OS northings and eastings
+	OSGB36LatLng.prototype.to_os_coords = function () {
+	  var phi = this.lat * _constants.deg2rad; // convert latitude to radians
+	  var lam = this.lng * _constants.deg2rad; // convert longitude to radians
+	  var a = 6377563.396; // OSGB semi-major axis
+	  var b = 6356256.91; // OSGB semi-minor axis
+	  var e0 = 400000; // easting of false origin
+	  var n0 = -100000; // northing of false origin
+	  var f0 = 0.9996012717; // OSGB scale factor on central meridian
+	  var e2 = 0.0066705397616; // OSGB eccentricity squared
+	  var lam0 = -0.034906585039886591; // OSGB false east
+	  var phi0 = 0.85521133347722145; // OSGB false north
+	  var af0 = a * f0;
+	  var bf0 = b * f0;
+
+	  // easting
+	  var slat2 = Math.sin(phi) * Math.sin(phi);
+	  var nu = af0 / Math.sqrt(1 - e2 * slat2);
+	  var rho = nu * (1 - e2) / (1 - e2 * slat2);
+	  var eta2 = nu / rho - 1;
+	  var p = lam - lam0;
+	  var IV = nu * Math.cos(phi);
+	  var clat3 = Math.pow(Math.cos(phi), 3);
+	  var tlat2 = Math.tan(phi) * Math.tan(phi);
+	  var V = nu / 6 * clat3 * (nu / rho - tlat2);
+	  var clat5 = Math.pow(Math.cos(phi), 5);
+	  var tlat4 = Math.pow(Math.tan(phi), 4);
+	  var VI = nu / 120 * clat5 * (5 - 18 * tlat2 + tlat4 + 14 * eta2 - 58 * tlat2 * eta2);
+	  var east = e0 + p * IV + Math.pow(p, 3) * V + Math.pow(p, 5) * VI;
+
+	  // northing
+	  var n = (af0 - bf0) / (af0 + bf0);
+	  var M = OSGB36LatLng._Marc(bf0, n, phi0, phi);
+	  var I = M + n0;
+	  var II = nu / 2 * Math.sin(phi) * Math.cos(phi);
+	  var III = nu / 24 * Math.sin(phi) * Math.pow(Math.cos(phi), 3) * (5 - Math.pow(Math.tan(phi), 2) + 9 * eta2);
+	  var IIIA = nu / 720 * Math.sin(phi) * clat5 * (61 - 58 * tlat2 + tlat4);
+	  var north = I + p * p * II + Math.pow(p, 4) * III + Math.pow(p, 6) * IIIA;
+
+	  return new _OSRef2.default(Math.round(east), Math.round(north));
+	};
+
+	exports.default = OSGB36LatLng;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _NationalGridCoords = __webpack_require__(5);
+
+	var _NationalGridCoords2 = _interopRequireDefault(_NationalGridCoords);
+
+	var _OSGB36LatLng = __webpack_require__(9);
+
+	var _OSGB36LatLng2 = _interopRequireDefault(_OSGB36LatLng);
+
+	var _MappingUtils = __webpack_require__(6);
+
+	var _MappingUtils2 = _interopRequireDefault(_MappingUtils);
+
+	var _constants = __webpack_require__(11);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 *
+	 * @param {number} easting metres
+	 * @param {number} northing metres
+	 * @constructor
+	 * @extends NationalGridCoords
+	 * @returns {OSRef}
+	 */
+	var OSRef = function OSRef(easting, northing) {
+	  this.x = easting;
+	  this.y = northing;
+	};
+
+	OSRef.prototype = new _NationalGridCoords2.default();
+	OSRef.prototype.constructor = OSRef;
+	OSRef.prototype.country = 'GB';
+
+	/**
+	 *
+	 * @param {number} precision metres
+	 * @returns {String}
+	 */
+	OSRef.prototype.to_gridref = function (precision) {
+	  var hundredkmE = this.x / 100000 | 0; // Math.floor(this.x / 100000);
+	  var hundredkmN = this.y / 100000 | 0; // Math.floor(this.y / 100000);
+	  var firstLetter = '';
+	  if (hundredkmN < 5) {
+	    if (hundredkmE < 5) {
+	      firstLetter = "S";
+	    } else {
+	      firstLetter = "T";
+	    }
+	  } else if (hundredkmN < 10) {
+	    if (hundredkmE < 5) {
+	      firstLetter = "N";
+	    } else {
+	      firstLetter = "O";
+	    }
+	  } else {
+	    if (hundredkmE < 5) {
+	      firstLetter = "H";
+	    } else {
+	      firstLetter = "J";
+	    }
+	  }
+
+	  var secondLetter = '';
+	  var index = 65 + (4 - hundredkmN % 5) * 5 + hundredkmE % 5;
+
+	  if (index >= 73) {
+	    index++;
+	  }
+
+	  secondLetter = String.fromCharCode(index);
+
+	  return _NationalGridCoords2.default._e_n_to_gr(firstLetter + secondLetter, this.x - 100000 * hundredkmE, this.y - 100000 * hundredkmN, precision ? precision : 1);
+	};
+
+	OSRef.prototype.is_gb_hectad = function () {
+	  return _MappingUtils2.default.gbHectads.indexOf(_MappingUtils2.default.gb_coords_to_hectad(this.x, this.y)) !== -1;
+	};
+
+	/**
+	 * convert easting,northing to a WGS84 lat lng
+	 *
+	 * @returns {WGS84LatLng}
+	 */
+	OSRef.prototype.to_latLng = function () {
+	  //airy1830 = RefEll::airy1830(); //new RefEll(6377563.396, 6356256.909);
+	  //var OSGB_F0  = 0.9996012717;
+	  //var N0       = -100000.0;
+	  var E0 = 400000.0;
+	  var phi0 = 0.85521133347722; //deg2rad(49.0);
+	  var lambda0 = -0.034906585039887; //deg2rad(-2.0);
+	  var a = 6377563.396; // airy1830->maj;
+	  //var b        = 6356256.909; // airy1830->min;
+	  var eSquared = 0.00667054007; // ((maj * maj) - (min * min)) / (maj * maj); // airy1830->ecc;
+	  var phi = 0.0;
+	  var lambda = 0.0;
+	  var E = this.x;
+	  var N = this.y;
+	  var n = 0.0016732203289875; //(a - b) / (a + b);
+	  var M;
+	  var phiPrime = (N + 100000) / (a * 0.9996012717) + phi0;
+
+	  // 15 / 8 === 1.875
+	  // 5 / 4 === 1.25
+	  // 21 / 8 === 2.625
+
+	  do {
+	    M = N + 100000 - 6353722.489 // (b * OSGB_F0)
+	    * (1.0016767257674 // * (((1 + n + (1.25 * n * n) + (1.25 * n * n * n))
+	    * (phiPrime - phi0) - 0.00502807228247412 // - (((3 * n) + (3 * n * n) + (2.625 * n * n * n))
+	    * Math.sin(phiPrime - phi0) * Math.cos(phiPrime + phi0) + (1.875 * n * n + 1.875 * n * n * n) * Math.sin(2.0 * (phiPrime - phi0)) * Math.cos(2.0 * (phiPrime + phi0)) - 35.0 / 24.0 * n * n * n * Math.sin(3.0 * (phiPrime - phi0)) * Math.cos(3.0 * (phiPrime + phi0)));
+
+	    phiPrime += M / 6375020.48098897; // (N - N0 - M) / (a * OSGB_F0);
+	  } while (M >= 0.001);
+
+	  var sinphiPrime2 = Math.sin(phiPrime) * Math.sin(phiPrime);
+	  var tanphiPrime2 = Math.tan(phiPrime) * Math.tan(phiPrime);
+	  var secphiPrime = 1.0 / Math.cos(phiPrime);
+
+	  var v = a * 0.9996012717 * Math.pow(1.0 - eSquared * sinphiPrime2, -0.5);
+
+	  var rho = a * 0.9996012717 * (1.0 - eSquared) * Math.pow(1.0 - eSquared * sinphiPrime2, -1.5);
+	  var etaSquared = v / rho - 1.0;
+	  var VII = Math.tan(phiPrime) / (2 * rho * v);
+	  var VIII = Math.tan(phiPrime) / (24.0 * rho * Math.pow(v, 3.0)) * (5.0 + 3.0 * tanphiPrime2 + etaSquared - 9.0 * tanphiPrime2 * etaSquared);
+	  var IX = Math.tan(phiPrime) / (720.0 * rho * Math.pow(v, 5.0)) * (61.0 + 90.0 * tanphiPrime2 + 45.0 * tanphiPrime2 * tanphiPrime2);
+	  var X = secphiPrime / v;
+	  var XI = secphiPrime / (6.0 * v * v * v) * (v / rho + 2 * tanphiPrime2);
+	  var XII = secphiPrime / (120.0 * Math.pow(v, 5.0)) * (5.0 + 28.0 * tanphiPrime2 + 24.0 * tanphiPrime2 * tanphiPrime2);
+	  var XIIA = secphiPrime / (5040.0 * Math.pow(v, 7.0)) * (61.0 + 662.0 * tanphiPrime2 + 1320.0 * tanphiPrime2 * tanphiPrime2 + 720.0 * tanphiPrime2 * tanphiPrime2 * tanphiPrime2);
+	  phi = phiPrime - VII * Math.pow(E - E0, 2.0) + VIII * Math.pow(E - E0, 4.0) - IX * Math.pow(E - E0, 6.0);
+	  lambda = lambda0 + X * (E - E0) - XI * Math.pow(E - E0, 3.0) + XII * Math.pow(E - E0, 5.0) - XIIA * Math.pow(E - E0, 7.0);
+
+	  //var ll = new OSGB36LatLng(rad2deg * phi, rad2deg * lambda); // airy 1830
+	  //ll.OSGB36_to_WGS84(); // google earth uses WGS84
+
+	  //return ll;
+	  return new _OSGB36LatLng2.default(_constants.rad2deg * phi, _constants.rad2deg * lambda).to_WGS84();
+	};
+
+	exports.default = OSRef;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var deg2rad = Math.PI / 180;
+	var rad2deg = 180.0 / Math.PI;
+
+	exports.deg2rad = deg2rad;
+	exports.rad2deg = rad2deg;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _OSGB36LatLng = __webpack_require__(9);
+
+	var _OSGB36LatLng2 = _interopRequireDefault(_OSGB36LatLng);
+
+	var _WGS84LatLng = __webpack_require__(7);
+
+	var _WGS84LatLng2 = _interopRequireDefault(_WGS84LatLng);
+
+	var _OSIRef = __webpack_require__(13);
+
+	var _OSIRef2 = _interopRequireDefault(_OSIRef);
+
+	var _LatLng = __webpack_require__(14);
+
+	var _LatLng2 = _interopRequireDefault(_LatLng);
+
+	var _constants = __webpack_require__(11);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 * represents lat lng as Modified Airy (Irish grid projection)
+	 *
+	 * @param {number} lat
+	 * @param {number} lng
+	 * @constructor
+	 */
+	var IELatLng = function IELatLng(lat, lng) {
+	  this.lat = lat;
+	  this.lng = lng;
+	};
+
+	//converts lat and lon (modified Airy) to OSI northings and eastings
+	IELatLng.prototype.to_os_coords = function () {
+	  //var deg2rad = Math.PI / 180;
+	  //var rad2deg = 180.0 / Math.PI;
+
+	  var phi = this.lat * _constants.deg2rad; // convert latitude to radians
+	  var lam = this.lng * _constants.deg2rad; // convert longitude to radians
+	  var a = 6377340.189; // OSI semi-major
+	  var b = 6356034.447; // OSI semi-minor
+	  var e0 = 200000; // OSI easting of false origin
+	  var n0 = 250000; // OSI northing of false origin
+	  var f0 = 1.000035; // OSI scale factor on central meridian
+	  var e2 = 0.00667054015; // OSI eccentricity squared
+	  var lam0 = -0.13962634015954636615389526147909; // OSI false east
+	  var phi0 = 0.93375114981696632365417456114141; // OSI false north
+	  var af0 = a * f0;
+	  var bf0 = b * f0;
+
+	  // easting
+	  var slat2 = Math.sin(phi) * Math.sin(phi);
+	  var nu = af0 / Math.sqrt(1 - e2 * slat2);
+	  var rho = nu * (1 - e2) / (1 - e2 * slat2);
+	  var eta2 = nu / rho - 1;
+	  var p = lam - lam0;
+	  var IV = nu * Math.cos(phi);
+	  var clat3 = Math.pow(Math.cos(phi), 3);
+	  var tlat2 = Math.tan(phi) * Math.tan(phi);
+	  var V = nu / 6 * clat3 * (nu / rho - tlat2);
+	  var clat5 = Math.pow(Math.cos(phi), 5);
+	  var tlat4 = Math.pow(Math.tan(phi), 4);
+	  var VI = nu / 120 * clat5 * (5 - 18 * tlat2 + tlat4 + 14 * eta2 - 58 * tlat2 * eta2);
+	  var east = e0 + p * IV + Math.pow(p, 3) * V + Math.pow(p, 5) * VI;
+
+	  // northing
+	  var n = (af0 - bf0) / (af0 + bf0);
+	  var M = _OSGB36LatLng2.default._Marc(bf0, n, phi0, phi);
+	  var I = M + n0;
+	  var II = nu / 2 * Math.sin(phi) * Math.cos(phi);
+	  var III = nu / 24 * Math.sin(phi) * Math.pow(Math.cos(phi), 3) * (5 - Math.pow(Math.tan(phi), 2) + 9 * eta2);
+	  var IIIA = nu / 720 * Math.sin(phi) * clat5 * (61 - 58 * tlat2 + tlat4);
+	  var north = I + p * p * II + Math.pow(p, 4) * III + Math.pow(p, 6) * IIIA;
+
+	  //return {x: Math.round(east), y: Math.round(north)};
+
+	  /*
+	   return (east > 0 && north > 0) ?
+	   new OSIRef(Math.round(east), Math.round(north))
+	   :
+	   null;
+	   */
+	  return new _OSIRef2.default(Math.round(east), Math.round(north));
+	};
+
+	/**
+	 * convert Irish projection to WGS84 (for Google Maps)
+	 * see http://www.dorcus.co.uk/carabus/ll_ngr.html
+	 */
+	IELatLng.prototype.IE_to_WGS84 = function () {
+	  var IRISH_AXIS = 6377340.189;
+	  var IRISH_ECCENTRIC = 0.00667054015;
+
+	  var WGS84_AXIS = 6378137;
+	  var WGS84_ECCENTRIC = 0.00669438037928458;
+
+	  /*
+	   * IE
+	   a = 6377340.189;      // OSI semi-major
+	   b = 6356034.447;      // OSI semi-minor
+	   e0 = 200000;          // OSI easting of false origin
+	   n0 = 250000;          // OSI northing of false origin
+	   f0 = 1.000035;        // OSI scale factor on central meridian
+	   e2 = 0.00667054015;   // OSI eccentricity squared
+	   lam0 = -0.13962634015954636615389526147909;   // OSI false east
+	   phi0 = 0.93375114981696632365417456114141;    // OSI false north
+	   */
+
+	  //height = 0;
+
+	  var latLngRadians = _LatLng2.default.transform(this.lat * _constants.deg2rad, this.lng * _constants.deg2rad, IRISH_AXIS, IRISH_ECCENTRIC, 0, WGS84_AXIS, WGS84_ECCENTRIC, 482.53, -130.596, 564.557, -1.042, -0.214, -0.631, -8.15);
+
+	  return new _WGS84LatLng2.default(latLngRadians.lat * _constants.rad2deg, latLngRadians.lng * _constants.rad2deg);
+	};
+
+	exports.default = IELatLng;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _NationalGridCoords = __webpack_require__(5);
+
+	var _NationalGridCoords2 = _interopRequireDefault(_NationalGridCoords);
+
+	var _MappingUtils = __webpack_require__(6);
+
+	var _MappingUtils2 = _interopRequireDefault(_MappingUtils);
+
+	var _IELatLng = __webpack_require__(12);
+
+	var _IELatLng2 = _interopRequireDefault(_IELatLng);
+
+	var _constants = __webpack_require__(11);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	/**
+	 *
+	 * @param {number} easting metres
+	 * @param {number} northing metres
+	 * @constructor
+	 * @returns {OSIRef}
+	 */
+	var OSIRef = function OSIRef(easting, northing) {
+	  this.x = easting;
+	  this.y = northing;
+	};
+
+	OSIRef.prototype = new _NationalGridCoords2.default();
+	OSIRef.prototype.constructor = OSIRef;
+	OSIRef.prototype.country = 'IE';
+
+	/**
+	 * convert easting,northing to a WGS84 lat lng
+	 *
+	 * @returns {WGS84LatLng}
+	 */
+	OSIRef.prototype.to_latLng = function () {
+	  //converts OSI coords to lat/long.
+
+	  // modified from OSGBtoLL, Equations from USGS Bulletin 1532
+	  //East Longitudes are positive, West longitudes are negative.
+	  //North latitudes are positive, South latitudes are negative
+	  //Lat and Long are in decimal degrees.
+	  //Written by Chuck Gantz- chuck.gantz@globalstar.com
+
+	  // php transliteration by TH
+
+	  //OSIENorthing = this.y;
+	  //OSIEEasting = this.x;
+
+	  //constants
+	  //PI = 3.14159265;
+	  //FOURTHPI = M_PI / 4.0;
+	  //DEG2RAD = M_PI / 180.0;
+	  //RAD2DEG = 180.0 / M_PI;
+	  // ////////////////
+
+	  var k0 = 1.000035; // scale factor
+	  //double a;
+	  //double eccPrimeSquared;
+	  //double N1, T1, C1, R1, D, M;
+	  var LongOrigin = -8.0;
+	  //LatOrigin = 53.5;
+	  //LatOriginRad = LatOrigin * DEG2RAD;
+
+	  //UK
+	  //majoraxis=6377563.396; //Airy
+	  //a=6377563.396;
+	  //minoraxis = 6356256.91; //Airy
+
+	  //IE
+	  //majoraxis = 6377340.189; //Airy
+	  var a = 6377340.189;
+	  //minoraxis = 6356034.447; //Airy
+
+	  //eccSquared = (majoraxis * majoraxis - minoraxis * minoraxis) / (majoraxis * majoraxis);
+	  var eccSquared = 0.0066705402933363;
+
+	  //e1 = (1-Math.sqrt(1-eccSquared))/(1+Math.sqrt(1-eccSquared));
+	  var e1 = 0.0016732203841521;
+	  //error_log("eccSquared={eccSquared} e1={e1}");
+
+	  //only calculate M0 once since it is based on the origin of the OSGB projection, which is fixed
+	  //M0 = a*((1	- eccSquared/4		- 3*eccSquared*eccSquared/64	- 5*eccSquared*eccSquared*eccSquared/256)*LatOriginRad
+	  //	- (3*eccSquared/8	+ 3*eccSquared*eccSquared/32	+ 45*eccSquared*eccSquared*eccSquared/1024)*Math.sin(2*LatOriginRad)
+	  //	+ (15*eccSquared*eccSquared/256 + 45*eccSquared*eccSquared*eccSquared/1024)*Math.sin(4*LatOriginRad)
+	  //	- (35*eccSquared*eccSquared*eccSquared/3072)*Math.sin(6*LatOriginRad));
+	  //error_log("M0 = {M0}");
+	  var M0 = 5929615.3530033;
+
+	  //OSGBSquareToRefCoords(OSGBZone, RefEasting, RefNorthing); // Assume supplied MapInfo northing and easting take this into account
+	  var x = this.x - 200000.0; //remove 400,000 meter false easting for longitude
+	  var y = this.y - 250000.0; //remove 100,000 meter false easting for longitude
+
+	  //eccPrimeSquared = (eccSquared)/(1.0-eccSquared);
+	  var eccPrimeSquared = 0.0067153352074207;
+	  //error_log("eccPrimeSquared={eccPrimeSquared}");
+
+	  var M = M0 + y / k0;
+	  var mu = M / (a * (1 - eccSquared / 4 - 3 * eccSquared * eccSquared / 64 - 5 * eccSquared * eccSquared * eccSquared / 256));
+
+	  var phi1Rad = mu + (3 * e1 / 2 - 27 * e1 * e1 * e1 / 32) * Math.sin(2 * mu) + (21 * e1 * e1 / 16 - 55 * e1 * e1 * e1 * e1 / 32) * Math.sin(4 * mu) + 151 * e1 * e1 * e1 / 96 * Math.sin(6 * mu);
+	  //phi1 = phi1Rad*RAD2DEG;
+
+	  var N1 = a / Math.sqrt(1 - eccSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad));
+	  var T1 = Math.tan(phi1Rad) * Math.tan(phi1Rad);
+	  var C1 = eccPrimeSquared * Math.cos(phi1Rad) * Math.cos(phi1Rad);
+	  var R1 = a * (1 - eccSquared) / Math.pow(1 - eccSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad), 1.5);
+	  var D = x / (N1 * k0);
+
+	  var Lat = phi1Rad - N1 * Math.tan(phi1Rad) / R1 * (D * D / 2 - (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * eccPrimeSquared) * D * D * D * D / 24 + (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * eccPrimeSquared - 3 * C1 * C1) * D * D * D * D * D * D / 720);
+	  Lat = Lat * _constants.rad2deg;
+
+	  var Long = (D - (1 + 2 * T1 + C1) * D * D * D / 6 + (5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * eccPrimeSquared + 24 * T1 * T1) * D * D * D * D * D / 120) / Math.cos(phi1Rad);
+
+	  Long = LongOrigin + Long * _constants.rad2deg;
+
+	  //return new LatLng(Lat, Long);
+
+	  //var ll = new IELatLng(Lat, Long); // Irish projection (modified Airy)
+	  //ll.IE_to_WGS84(); // google earth uses WGS84
+
+	  //return ll;
+
+	  return new _IELatLng2.default(Lat, Long).IE_to_WGS84();
+	};
+
+	OSIRef.prototype.to_gridref = function (precision) {
+	  var hundredkmE = Math.floor(this.x / 100000),
+	      hundredkmN = Math.floor(this.y / 100000);
+	  if (_MappingUtils2.default.irishGrid[hundredkmE] && _MappingUtils2.default.irishGrid[hundredkmE][hundredkmN]) {
+	    //var letter = MappingUtils.irishGrid[hundredkmE][hundredkmN];
+
+	    //var eKm = '0' + Math.floor((this.x % 100000)/1000).toString();
+	    //var nKm = '0' + Math.floor((this.x % 100000)/1000).toString();
+
+	    return _NationalGridCoords2.default._e_n_to_gr(_MappingUtils2.default.irishGrid[hundredkmE][hundredkmN], this.x - 100000 * hundredkmE, this.y - 100000 * hundredkmN, precision ? precision : 1);
+	  } else {
+	    return null;
+	  }
+	};
+
+	exports.default = OSIRef;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _constants = __webpack_require__(11);
+
+	/**
+	 * represents lat lng
+	 *
+	 * @param {number} lat
+	 * @param {number} lng
+	 * @constructor
+	 */
+	var LatLng = function LatLng(lat, lng) {
+	  this.lat = lat;
+	  this.lng = lng;
+	};
+
+	LatLng.transform = function (lat, lon, a, e, h, a2, e2, xp, yp, zp, xr, yr, zr, s) {
+	  // convert to cartesian; lat, lon are radians
+	  var sf = s * 0.000001;
+	  var v = a / Math.sqrt(1 - e * (Math.sin(lat) * Math.sin(lat)));
+	  var x = (v + h) * Math.cos(lat) * Math.cos(lon);
+	  var y = (v + h) * Math.cos(lat) * Math.sin(lon);
+	  var z = ((1 - e) * v + h) * Math.sin(lat);
+	  // transform cartesian
+	  var xrot = xr / 3600 * _constants.deg2rad;
+	  var yrot = yr / 3600 * _constants.deg2rad;
+	  var zrot = zr / 3600 * _constants.deg2rad;
+	  var hx = x + x * sf - y * zrot + z * yrot + xp;
+	  var hy = x * zrot + y + y * sf - z * xrot + yp;
+	  var hz = -1 * x * yrot + y * xrot + z + z * sf + zp;
+	  // Convert back to lat, lon
+	  lon = Math.atan(hy / hx);
+	  var p = Math.sqrt(hx * hx + hy * hy);
+	  lat = Math.atan(hz / (p * (1 - e2)));
+	  v = a2 / Math.sqrt(1 - e2 * (Math.sin(lat) * Math.sin(lat)));
+	  var errvalue = 1.0;
+	  var lat0 = 0;
+	  while (errvalue > 0.001) {
+	    lat0 = Math.atan((hz + e2 * v * Math.sin(lat)) / p);
+	    errvalue = Math.abs(lat0 - lat);
+	    lat = lat0;
+	  }
+	  //h = p / Math.cos(lat) - v;
+	  //var geo = { latitude: lat, longitude: lon, height: h };  // object to hold lat and lon
+	  return new LatLng(lat, lon);
+	};
+
+	exports.default = LatLng;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _GridRefParser = __webpack_require__(2);
 
 	var _GridRefParser2 = _interopRequireDefault(_GridRefParser);
 
-	var _OSRef = __webpack_require__(7);
+	var _OSRef = __webpack_require__(10);
 
 	var _OSRef2 = _interopRequireDefault(_OSRef);
 
@@ -1423,7 +2359,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = GridRefParserGB;
 
 /***/ }),
-/* 7 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1432,152 +2368,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
-	var _NationalGridCoords = __webpack_require__(4);
-
-	var _NationalGridCoords2 = _interopRequireDefault(_NationalGridCoords);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 *
-	 * @param {number} easting metres
-	 * @param {number} northing metres
-	 * @constructor
-	 * @extends NationalGridCoords
-	 * @returns {OSRef}
-	 */
-	var OSRef = function OSRef(easting, northing) {
-	  this.x = easting;
-	  this.y = northing;
-	};
-
-	OSRef.prototype = new _NationalGridCoords2.default();
-	OSRef.prototype.constructor = OSRef;
-	OSRef.prototype.country = 'GB';
-
-	/**
-	 *
-	 * @param {number} precision metres
-	 * @returns {String}
-	 */
-	OSRef.prototype.to_gridref = function (precision) {
-	  var hundredkmE = this.x / 100000 | 0; // Math.floor(this.x / 100000);
-	  var hundredkmN = this.y / 100000 | 0; // Math.floor(this.y / 100000);
-	  var firstLetter = '';
-	  if (hundredkmN < 5) {
-	    if (hundredkmE < 5) {
-	      firstLetter = "S";
-	    } else {
-	      firstLetter = "T";
-	    }
-	  } else if (hundredkmN < 10) {
-	    if (hundredkmE < 5) {
-	      firstLetter = "N";
-	    } else {
-	      firstLetter = "O";
-	    }
-	  } else {
-	    if (hundredkmE < 5) {
-	      firstLetter = "H";
-	    } else {
-	      firstLetter = "J";
-	    }
-	  }
-
-	  var secondLetter = '';
-	  var index = 65 + (4 - hundredkmN % 5) * 5 + hundredkmE % 5;
-
-	  if (index >= 73) {
-	    index++;
-	  }
-
-	  secondLetter = String.fromCharCode(index);
-
-	  return _NationalGridCoords2.default._e_n_to_gr(firstLetter + secondLetter, this.x - 100000 * hundredkmE, this.y - 100000 * hundredkmN, precision ? precision : 1);
-	};
-
-	OSRef.prototype.is_gb_hectad = function () {
-	  return MappingUtils.gbHectads.indexOf(MappingUtils.gb_coords_to_hectad(this.x, this.y)) !== -1;
-	};
-
-	/**
-	 * convert easting,northing to a WGS84 lat lng
-	 *
-	 * @returns {WGS84LatLng}
-	 */
-	OSRef.prototype.to_latLng = function () {
-	  //airy1830 = RefEll::airy1830(); //new RefEll(6377563.396, 6356256.909);
-	  //var OSGB_F0  = 0.9996012717;
-	  //var N0       = -100000.0;
-	  var E0 = 400000.0;
-	  var phi0 = 0.85521133347722; //deg2rad(49.0);
-	  var lambda0 = -0.034906585039887; //deg2rad(-2.0);
-	  var a = 6377563.396; // airy1830->maj;
-	  //var b        = 6356256.909; // airy1830->min;
-	  var eSquared = 0.00667054007; // ((maj * maj) - (min * min)) / (maj * maj); // airy1830->ecc;
-	  var phi = 0.0;
-	  var lambda = 0.0;
-	  var E = this.x;
-	  var N = this.y;
-	  var n = 0.0016732203289875; //(a - b) / (a + b);
-	  var M;
-	  var phiPrime = (N + 100000) / (a * 0.9996012717) + phi0;
-
-	  // 15 / 8 === 1.875
-	  // 5 / 4 === 1.25
-	  // 21 / 8 === 2.625
-
-	  do {
-	    M = N + 100000 - 6353722.489 // (b * OSGB_F0)
-	    * (1.0016767257674 // * (((1 + n + (1.25 * n * n) + (1.25 * n * n * n))
-	    * (phiPrime - phi0) - 0.00502807228247412 // - (((3 * n) + (3 * n * n) + (2.625 * n * n * n))
-	    * Math.sin(phiPrime - phi0) * Math.cos(phiPrime + phi0) + (1.875 * n * n + 1.875 * n * n * n) * Math.sin(2.0 * (phiPrime - phi0)) * Math.cos(2.0 * (phiPrime + phi0)) - 35.0 / 24.0 * n * n * n * Math.sin(3.0 * (phiPrime - phi0)) * Math.cos(3.0 * (phiPrime + phi0)));
-
-	    phiPrime += M / 6375020.48098897; // (N - N0 - M) / (a * OSGB_F0);
-	  } while (M >= 0.001);
-
-	  var sinphiPrime2 = Math.sin(phiPrime) * Math.sin(phiPrime);
-	  var tanphiPrime2 = Math.tan(phiPrime) * Math.tan(phiPrime);
-	  var secphiPrime = 1.0 / Math.cos(phiPrime);
-
-	  var v = a * 0.9996012717 * Math.pow(1.0 - eSquared * sinphiPrime2, -0.5);
-
-	  var rho = a * 0.9996012717 * (1.0 - eSquared) * Math.pow(1.0 - eSquared * sinphiPrime2, -1.5);
-	  var etaSquared = v / rho - 1.0;
-	  var VII = Math.tan(phiPrime) / (2 * rho * v);
-	  var VIII = Math.tan(phiPrime) / (24.0 * rho * Math.pow(v, 3.0)) * (5.0 + 3.0 * tanphiPrime2 + etaSquared - 9.0 * tanphiPrime2 * etaSquared);
-	  var IX = Math.tan(phiPrime) / (720.0 * rho * Math.pow(v, 5.0)) * (61.0 + 90.0 * tanphiPrime2 + 45.0 * tanphiPrime2 * tanphiPrime2);
-	  var X = secphiPrime / v;
-	  var XI = secphiPrime / (6.0 * v * v * v) * (v / rho + 2 * tanphiPrime2);
-	  var XII = secphiPrime / (120.0 * Math.pow(v, 5.0)) * (5.0 + 28.0 * tanphiPrime2 + 24.0 * tanphiPrime2 * tanphiPrime2);
-	  var XIIA = secphiPrime / (5040.0 * Math.pow(v, 7.0)) * (61.0 + 662.0 * tanphiPrime2 + 1320.0 * tanphiPrime2 * tanphiPrime2 + 720.0 * tanphiPrime2 * tanphiPrime2 * tanphiPrime2);
-	  phi = phiPrime - VII * Math.pow(E - E0, 2.0) + VIII * Math.pow(E - E0, 4.0) - IX * Math.pow(E - E0, 6.0);
-	  lambda = lambda0 + X * (E - E0) - XI * Math.pow(E - E0, 3.0) + XII * Math.pow(E - E0, 5.0) - XIIA * Math.pow(E - E0, 7.0);
-
-	  //var ll = new OSGB36LatLng(rad2deg * phi, rad2deg * lambda); // airy 1830
-	  //ll.OSGB36_to_WGS84(); // google earth uses WGS84
-
-	  //return ll;
-	  return new OSGB36LatLng(rad2deg * phi, rad2deg * lambda).to_WGS84();
-	};
-
-	exports.default = OSRef;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _GridRefParser = __webpack_require__(1);
+	var _GridRefParser = __webpack_require__(2);
 
 	var _GridRefParser2 = _interopRequireDefault(_GridRefParser);
 
-	var _OSIRef = __webpack_require__(9);
+	var _OSIRef = __webpack_require__(13);
 
 	var _OSIRef2 = _interopRequireDefault(_OSIRef);
 
@@ -1775,726 +2570,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = GridRefParserIE;
 
 /***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _NationalGridCoords = __webpack_require__(4);
-
-	var _NationalGridCoords2 = _interopRequireDefault(_NationalGridCoords);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 *
-	 * @param {number} easting metres
-	 * @param {number} northing metres
-	 * @constructor
-	 * @returns {OSIRef}
-	 */
-	var OSIRef = function OSIRef(easting, northing) {
-	  this.x = easting;
-	  this.y = northing;
-	};
-
-	OSIRef.prototype = new _NationalGridCoords2.default();
-	OSIRef.prototype.constructor = OSIRef;
-	OSIRef.prototype.country = 'IE';
-
-	/**
-	 * convert easting,northing to a WGS84 lat lng
-	 *
-	 * @returns {WGS84LatLng}
-	 */
-	OSIRef.prototype.to_latLng = function () {
-	  //converts OSI coords to lat/long.
-
-	  // modified from OSGBtoLL, Equations from USGS Bulletin 1532
-	  //East Longitudes are positive, West longitudes are negative.
-	  //North latitudes are positive, South latitudes are negative
-	  //Lat and Long are in decimal degrees.
-	  //Written by Chuck Gantz- chuck.gantz@globalstar.com
-
-	  // php transliteration by TH
-
-	  //OSIENorthing = this.y;
-	  //OSIEEasting = this.x;
-
-	  //constants
-	  //PI = 3.14159265;
-	  //FOURTHPI = M_PI / 4.0;
-	  //DEG2RAD = M_PI / 180.0;
-	  //RAD2DEG = 180.0 / M_PI;
-	  // ////////////////
-
-	  var k0 = 1.000035; // scale factor
-	  //double a;
-	  //double eccPrimeSquared;
-	  //double N1, T1, C1, R1, D, M;
-	  var LongOrigin = -8.0;
-	  //LatOrigin = 53.5;
-	  //LatOriginRad = LatOrigin * DEG2RAD;
-
-	  //UK
-	  //majoraxis=6377563.396; //Airy
-	  //a=6377563.396;
-	  //minoraxis = 6356256.91; //Airy
-
-	  //IE
-	  //majoraxis = 6377340.189; //Airy
-	  var a = 6377340.189;
-	  //minoraxis = 6356034.447; //Airy
-
-	  //eccSquared = (majoraxis * majoraxis - minoraxis * minoraxis) / (majoraxis * majoraxis);
-	  var eccSquared = 0.0066705402933363;
-
-	  //e1 = (1-Math.sqrt(1-eccSquared))/(1+Math.sqrt(1-eccSquared));
-	  var e1 = 0.0016732203841521;
-	  //error_log("eccSquared={eccSquared} e1={e1}");
-
-	  //only calculate M0 once since it is based on the origin of the OSGB projection, which is fixed
-	  //M0 = a*((1	- eccSquared/4		- 3*eccSquared*eccSquared/64	- 5*eccSquared*eccSquared*eccSquared/256)*LatOriginRad
-	  //	- (3*eccSquared/8	+ 3*eccSquared*eccSquared/32	+ 45*eccSquared*eccSquared*eccSquared/1024)*Math.sin(2*LatOriginRad)
-	  //	+ (15*eccSquared*eccSquared/256 + 45*eccSquared*eccSquared*eccSquared/1024)*Math.sin(4*LatOriginRad)
-	  //	- (35*eccSquared*eccSquared*eccSquared/3072)*Math.sin(6*LatOriginRad));
-	  //error_log("M0 = {M0}");
-	  var M0 = 5929615.3530033;
-
-	  //OSGBSquareToRefCoords(OSGBZone, RefEasting, RefNorthing); // Assume supplied MapInfo northing and easting take this into account
-	  var x = this.x - 200000.0; //remove 400,000 meter false easting for longitude
-	  var y = this.y - 250000.0; //remove 100,000 meter false easting for longitude
-
-	  //eccPrimeSquared = (eccSquared)/(1.0-eccSquared);
-	  var eccPrimeSquared = 0.0067153352074207;
-	  //error_log("eccPrimeSquared={eccPrimeSquared}");
-
-	  var M = M0 + y / k0;
-	  var mu = M / (a * (1 - eccSquared / 4 - 3 * eccSquared * eccSquared / 64 - 5 * eccSquared * eccSquared * eccSquared / 256));
-
-	  var phi1Rad = mu + (3 * e1 / 2 - 27 * e1 * e1 * e1 / 32) * Math.sin(2 * mu) + (21 * e1 * e1 / 16 - 55 * e1 * e1 * e1 * e1 / 32) * Math.sin(4 * mu) + 151 * e1 * e1 * e1 / 96 * Math.sin(6 * mu);
-	  //phi1 = phi1Rad*RAD2DEG;
-
-	  var N1 = a / Math.sqrt(1 - eccSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad));
-	  var T1 = Math.tan(phi1Rad) * Math.tan(phi1Rad);
-	  var C1 = eccPrimeSquared * Math.cos(phi1Rad) * Math.cos(phi1Rad);
-	  var R1 = a * (1 - eccSquared) / Math.pow(1 - eccSquared * Math.sin(phi1Rad) * Math.sin(phi1Rad), 1.5);
-	  var D = x / (N1 * k0);
-
-	  var Lat = phi1Rad - N1 * Math.tan(phi1Rad) / R1 * (D * D / 2 - (5 + 3 * T1 + 10 * C1 - 4 * C1 * C1 - 9 * eccPrimeSquared) * D * D * D * D / 24 + (61 + 90 * T1 + 298 * C1 + 45 * T1 * T1 - 252 * eccPrimeSquared - 3 * C1 * C1) * D * D * D * D * D * D / 720);
-	  Lat = Lat * rad2deg;
-
-	  var Long = (D - (1 + 2 * T1 + C1) * D * D * D / 6 + (5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * eccPrimeSquared + 24 * T1 * T1) * D * D * D * D * D / 120) / Math.cos(phi1Rad);
-
-	  Long = LongOrigin + Long * rad2deg;
-
-	  //return new LatLng(Lat, Long);
-
-	  //var ll = new IELatLng(Lat, Long); // Irish projection (modified Airy)
-	  //ll.IE_to_WGS84(); // google earth uses WGS84
-
-	  //return ll;
-
-	  return new IELatLng(Lat, Long).IE_to_WGS84();
-	};
-
-	OSIRef.prototype.to_gridref = function (precision) {
-	  var hundredkmE = Math.floor(this.x / 100000),
-	      hundredkmN = Math.floor(this.y / 100000);
-	  if (MappingUtils.irishGrid[hundredkmE] && MappingUtils.irishGrid[hundredkmE][hundredkmN]) {
-	    //var letter = MappingUtils.irishGrid[hundredkmE][hundredkmN];
-
-	    //var eKm = '0' + Math.floor((this.x % 100000)/1000).toString();
-	    //var nKm = '0' + Math.floor((this.x % 100000)/1000).toString();
-
-	    return _NationalGridCoords2.default._e_n_to_gr(MappingUtils.irishGrid[hundredkmE][hundredkmN], this.x - 100000 * hundredkmE, this.y - 100000 * hundredkmN, precision ? precision : 1);
-	  } else {
-	    return null;
-	  }
-	};
-
-	exports.default = OSIRef;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _OSCIRef = __webpack_require__(3);
-
-	var _OSCIRef2 = _interopRequireDefault(_OSCIRef);
-
-	var _OSGB36LatLng = __webpack_require__(11);
-
-	var _OSGB36LatLng2 = _interopRequireDefault(_OSGB36LatLng);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * represents lat lng as INT24 (CI grid projection)
-	 *
-	 * @constructor
-	 * @param {number} lat
-	 * @param {number} lng
-	 */
-	var CILatLng = function CILatLng(lat, lng) {
-	  this.lat = lat;
-	  this.lng = lng;
-	};
-
-	/**
-	 * converts lat and lon to CI northings and eastings
-	 *
-	 * @returns OSCIRef
-	 */
-	CILatLng.prototype.to_os_coords = function () {
-	  //var deg2rad = Math.PI / 180;
-	  //var rad2deg = 180.0 / Math.PI;
-
-	  var phi = this.lat * deg2rad; // convert latitude to radians
-	  var lam = this.lng * deg2rad; // convert longitude to radians
-	  var a = 6378388.000; // OSI semi-major
-	  var b = 6356911.946; // OSI semi-minor
-	  var e0 = 500000; // OSI easting of false origin
-	  var n0 = 0; // OSI northing of false origin
-	  var f0 = 0.9996; // OSI scale factor on central meridian
-	  var e2 = 0.0067226700223333; // OSI eccentricity squared
-	  var lam0 = -0.0523598775598; // OSI false east
-	  var phi0 = 0; // OSI false north
-	  var af0 = a * f0;
-	  var bf0 = b * f0;
-
-	  // easting
-	  var slat2 = Math.sin(phi) * Math.sin(phi);
-	  var nu = af0 / Math.sqrt(1 - e2 * slat2);
-	  var rho = nu * (1 - e2) / (1 - e2 * slat2);
-	  var eta2 = nu / rho - 1;
-	  var p = lam - lam0;
-	  var IV = nu * Math.cos(phi);
-	  var clat3 = Math.pow(Math.cos(phi), 3);
-	  var tlat2 = Math.tan(phi) * Math.tan(phi);
-	  var V = nu / 6 * clat3 * (nu / rho - tlat2);
-	  var clat5 = Math.pow(Math.cos(phi), 5);
-	  var tlat4 = Math.pow(Math.tan(phi), 4);
-	  var VI = nu / 120 * clat5 * (5 - 18 * tlat2 + tlat4 + 14 * eta2 - 58 * tlat2 * eta2);
-	  var east = e0 + p * IV + Math.pow(p, 3) * V + Math.pow(p, 5) * VI;
-
-	  // northing
-	  var n = (af0 - bf0) / (af0 + bf0);
-	  var M = _OSGB36LatLng2.default._Marc(bf0, n, phi0, phi);
-	  var I = M + n0;
-	  var II = nu / 2 * Math.sin(phi) * Math.cos(phi);
-	  var III = nu / 24 * Math.sin(phi) * Math.pow(Math.cos(phi), 3) * (5 - Math.pow(Math.tan(phi), 2) + 9 * eta2);
-	  var IIIA = nu / 720 * Math.sin(phi) * clat5 * (61 - 58 * tlat2 + tlat4);
-	  var north = I + p * p * II + Math.pow(p, 4) * III + Math.pow(p, 6) * IIIA;
-
-	  //return {x: Math.round(east), y: Math.round(north)};
-	  return new _OSCIRef2.default(Math.round(east), Math.round(north));
-	};
-
-	exports.default = CILatLng;
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _WGS84LatLng = __webpack_require__(12);
-
-	var _WGS84LatLng2 = _interopRequireDefault(_WGS84LatLng);
-
-	var _OSRef = __webpack_require__(7);
-
-	var _OSRef2 = _interopRequireDefault(_OSRef);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * represents lat lng as OSGB1936 (Ordnance Survey projection)
-	 *
-	 * @param {number} lat
-	 * @param {number} lng
-	 * @constructor
-	 */
-	var OSGB36LatLng = function OSGB36LatLng(lat, lng) {
-	  this.lat = lat;
-	  this.lng = lng;
-	};
-
-	/**
-	 *
-	 * @returns {WGS84LatLng}
-	 */
-	OSGB36LatLng.prototype.to_WGS84 = function () {
-	  //airy1830 = new RefEll(6377563.396, 6356256.909);
-	  var a = 6377563.396; //airy1830.maj;
-	  //var b        = 6356256.909; //airy1830.min;
-	  var eSquared = 0.00667054007; // ((maj * maj) - (min * min)) / (maj * maj); // airy1830.ecc;
-	  var phi = this.lat * deg2rad; // (Math.PI / 180)(this.lat);
-	  var sinPhi = Math.sin(phi);
-	  var lambda = this.lng * deg2rad; // (Math.PI / 180)(this.lng);
-	  var v = a / Math.sqrt(1 - eSquared * (sinPhi * sinPhi));
-	  //H = 0; // height
-	  var x = v * Math.cos(phi) * Math.cos(lambda);
-	  var y = v * Math.cos(phi) * Math.sin(lambda);
-	  var z = (1 - eSquared) * v * sinPhi;
-
-	  var tx = 446.448;
-	  var ty = -124.157;
-	  var tz = 542.060;
-	  var s = -0.0000204894;
-	  var rx = 0.000000728190110241429; // (Math.PI / 180)( 0.00004172222);
-	  var ry = 0.000001197489772948010; // (Math.PI / 180)( 0.00006861111);
-	  var rz = 0.000004082615892268120; // (Math.PI / 180)( 0.00023391666);
-
-	  var xB = tx + x * (1 + s) + -rx * y + ry * z;
-	  var yB = ty + rz * x + y * (1 + s) + -rx * z;
-	  var zB = tz + -ry * x + rx * y + z * (1 + s);
-
-	  //wgs84 = new RefEll(6378137.000, 6356752.3141);
-	  a = 6378137.000; // wgs84.maj;
-	  //var b        = 6356752.3141; // wgs84.min;
-	  eSquared = 0.00669438003; // ((maj * maj) - (min * min)) / (maj * maj); //wgs84.ecc;
-
-	  //lambdaB = (180 / Math.PI)(Math.atan(yB / xB));
-	  var p = Math.sqrt(xB * xB + yB * yB);
-	  var phiN = Math.atan(zB / (p * (1 - eSquared)));
-
-	  for (var i = 1; i < 10; ++i) {
-	    var sinPhiN = Math.sin(phiN); // this must be in the for loop as phiN is variable
-	    phiN = Math.atan((zB + eSquared * (a / Math.sqrt(1 - eSquared * (sinPhiN * sinPhiN))) * sinPhiN) / p);
-	  }
-
-	  //this.lat = rad2deg * phiN;
-	  //this.lng = rad2deg * (Math.atan(yB / xB)); // lambdaB;
-
-	  return new _WGS84LatLng2.default(rad2deg * phiN, rad2deg * Math.atan(yB / xB));
-	};
-
-	//helper
-	OSGB36LatLng._Marc = function (bf0, n, phi0, phi) {
-	  return bf0 * ((1 + n + 5 / 4 * (n * n) + 5 / 4 * (n * n * n)) * (phi - phi0) - (3 * n + 3 * (n * n) + 21 / 8 * (n * n * n)) * Math.sin(phi - phi0) * Math.cos(phi + phi0) + (15 / 8 * (n * n) + 15 / 8 * (n * n * n)) * Math.sin(2 * (phi - phi0)) * Math.cos(2 * (phi + phi0)) - 35 / 24 * (n * n * n) * Math.sin(3 * (phi - phi0)) * Math.cos(3 * (phi + phi0)));
-	};
-
-	//converts lat and lon (OSGB36) to OS northings and eastings
-	OSGB36LatLng.prototype.to_os_coords = function () {
-	  var phi = this.lat * deg2rad; // convert latitude to radians
-	  var lam = this.lng * deg2rad; // convert longitude to radians
-	  var a = 6377563.396; // OSGB semi-major axis
-	  var b = 6356256.91; // OSGB semi-minor axis
-	  var e0 = 400000; // easting of false origin
-	  var n0 = -100000; // northing of false origin
-	  var f0 = 0.9996012717; // OSGB scale factor on central meridian
-	  var e2 = 0.0066705397616; // OSGB eccentricity squared
-	  var lam0 = -0.034906585039886591; // OSGB false east
-	  var phi0 = 0.85521133347722145; // OSGB false north
-	  var af0 = a * f0;
-	  var bf0 = b * f0;
-
-	  // easting
-	  var slat2 = Math.sin(phi) * Math.sin(phi);
-	  var nu = af0 / Math.sqrt(1 - e2 * slat2);
-	  var rho = nu * (1 - e2) / (1 - e2 * slat2);
-	  var eta2 = nu / rho - 1;
-	  var p = lam - lam0;
-	  var IV = nu * Math.cos(phi);
-	  var clat3 = Math.pow(Math.cos(phi), 3);
-	  var tlat2 = Math.tan(phi) * Math.tan(phi);
-	  var V = nu / 6 * clat3 * (nu / rho - tlat2);
-	  var clat5 = Math.pow(Math.cos(phi), 5);
-	  var tlat4 = Math.pow(Math.tan(phi), 4);
-	  var VI = nu / 120 * clat5 * (5 - 18 * tlat2 + tlat4 + 14 * eta2 - 58 * tlat2 * eta2);
-	  var east = e0 + p * IV + Math.pow(p, 3) * V + Math.pow(p, 5) * VI;
-
-	  // northing
-	  var n = (af0 - bf0) / (af0 + bf0);
-	  var M = OSGB36LatLng._Marc(bf0, n, phi0, phi);
-	  var I = M + n0;
-	  var II = nu / 2 * Math.sin(phi) * Math.cos(phi);
-	  var III = nu / 24 * Math.sin(phi) * Math.pow(Math.cos(phi), 3) * (5 - Math.pow(Math.tan(phi), 2) + 9 * eta2);
-	  var IIIA = nu / 720 * Math.sin(phi) * clat5 * (61 - 58 * tlat2 + tlat4);
-	  var north = I + p * p * II + Math.pow(p, 4) * III + Math.pow(p, 6) * IIIA;
-
-	  return new _OSRef2.default(Math.round(east), Math.round(north));
-	};
-
-	//helper
-	OSGB36LatLng._Marc = function (bf0, n, phi0, phi) {
-	  return bf0 * ((1 + n + 5 / 4 * (n * n) + 5 / 4 * (n * n * n)) * (phi - phi0) - (3 * n + 3 * (n * n) + 21 / 8 * (n * n * n)) * Math.sin(phi - phi0) * Math.cos(phi + phi0) + (15 / 8 * (n * n) + 15 / 8 * (n * n * n)) * Math.sin(2 * (phi - phi0)) * Math.cos(2 * (phi + phi0)) - 35 / 24 * (n * n * n) * Math.sin(3 * (phi - phi0)) * Math.cos(3 * (phi + phi0)));
-	};
-
-	//converts lat and lon (OSGB36) to OS northings and eastings
-	OSGB36LatLng.prototype.to_os_coords = function () {
-	  var phi = this.lat * deg2rad; // convert latitude to radians
-	  var lam = this.lng * deg2rad; // convert longitude to radians
-	  var a = 6377563.396; // OSGB semi-major axis
-	  var b = 6356256.91; // OSGB semi-minor axis
-	  var e0 = 400000; // easting of false origin
-	  var n0 = -100000; // northing of false origin
-	  var f0 = 0.9996012717; // OSGB scale factor on central meridian
-	  var e2 = 0.0066705397616; // OSGB eccentricity squared
-	  var lam0 = -0.034906585039886591; // OSGB false east
-	  var phi0 = 0.85521133347722145; // OSGB false north
-	  var af0 = a * f0;
-	  var bf0 = b * f0;
-
-	  // easting
-	  var slat2 = Math.sin(phi) * Math.sin(phi);
-	  var nu = af0 / Math.sqrt(1 - e2 * slat2);
-	  var rho = nu * (1 - e2) / (1 - e2 * slat2);
-	  var eta2 = nu / rho - 1;
-	  var p = lam - lam0;
-	  var IV = nu * Math.cos(phi);
-	  var clat3 = Math.pow(Math.cos(phi), 3);
-	  var tlat2 = Math.tan(phi) * Math.tan(phi);
-	  var V = nu / 6 * clat3 * (nu / rho - tlat2);
-	  var clat5 = Math.pow(Math.cos(phi), 5);
-	  var tlat4 = Math.pow(Math.tan(phi), 4);
-	  var VI = nu / 120 * clat5 * (5 - 18 * tlat2 + tlat4 + 14 * eta2 - 58 * tlat2 * eta2);
-	  var east = e0 + p * IV + Math.pow(p, 3) * V + Math.pow(p, 5) * VI;
-
-	  // northing
-	  var n = (af0 - bf0) / (af0 + bf0);
-	  var M = OSGB36LatLng._Marc(bf0, n, phi0, phi);
-	  var I = M + n0;
-	  var II = nu / 2 * Math.sin(phi) * Math.cos(phi);
-	  var III = nu / 24 * Math.sin(phi) * Math.pow(Math.cos(phi), 3) * (5 - Math.pow(Math.tan(phi), 2) + 9 * eta2);
-	  var IIIA = nu / 720 * Math.sin(phi) * clat5 * (61 - 58 * tlat2 + tlat4);
-	  var north = I + p * p * II + Math.pow(p, 4) * III + Math.pow(p, 6) * IIIA;
-
-	  return new _OSRef2.default(Math.round(east), Math.round(north));
-	};
-
-	exports.default = OSGB36LatLng;
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _CILatLng = __webpack_require__(10);
-
-	var _CILatLng2 = _interopRequireDefault(_CILatLng);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * represents lat lng as WGS84 (google map form)
-	 *
-	 * @param {number} lat
-	 * @param {number} lng
-	 * @constructor
-	 */
-	var WGS84LatLng = function WGS84LatLng(lat, lng) {
-	  this.lat = lat;
-	  this.lng = lng;
-	};
-
-	WGS84LatLng.prototype.to_OSGB1936_latlng = function () {
-	  //var deg2rad = Math.PI / 180;
-	  //var rad2deg = 180.0 / Math.PI;
-
-	  //first off convert to radians
-	  var radWGlat = this.lat * deg2rad;
-	  var radWGlon = this.lng * deg2rad;
-	  //these are the values for WGS84(GRS80) to OSGB36(Airy)
-	  var a = 6378137; // WGS84_AXIS
-	  var e = 0.00669438037928458; // WGS84_ECCENTRIC
-	  //var h = height; // height above datum (from GPGGA sentence)
-	  var h = 0;
-	  var a2 = 6377563.396; // OSGB_AXIS
-	  var e2 = 0.0066705397616; // OSGB_ECCENTRIC
-	  var xp = -446.448;
-	  var yp = 125.157;
-	  var zp = -542.06;
-	  var xr = -0.1502;
-	  var yr = -0.247;
-	  var zr = -0.8421;
-	  var s = 20.4894;
-
-	  // convert to cartesian; lat, lon are in radians
-	  var sf = s * 0.000001;
-	  var v = a / Math.sqrt(1 - e * Math.sin(radWGlat) * Math.sin(radWGlat));
-	  var x = (v + h) * Math.cos(radWGlat) * Math.cos(radWGlon);
-	  var y = (v + h) * Math.cos(radWGlat) * Math.sin(radWGlon);
-	  var z = ((1 - e) * v + h) * Math.sin(radWGlat);
-
-	  // transform cartesian
-	  var xrot = xr / 3600 * deg2rad;
-	  var yrot = yr / 3600 * deg2rad;
-	  var zrot = zr / 3600 * deg2rad;
-	  var hx = x + x * sf - y * zrot + z * yrot + xp;
-	  var hy = x * zrot + y + y * sf - z * xrot + yp;
-	  var hz = -1 * x * yrot + y * xrot + z + z * sf + zp;
-
-	  // Convert back to lat, lon
-	  var newLon = Math.atan(hy / hx);
-	  var p = Math.sqrt(hx * hx + hy * hy);
-	  var newLat = Math.atan(hz / (p * (1 - e2)));
-	  v = a2 / Math.sqrt(1 - e2 * (Math.sin(newLat) * Math.sin(newLat)));
-	  var errvalue = 1.0;
-	  var lat0 = 0;
-	  while (errvalue > 0.001) {
-	    lat0 = Math.atan((hz + e2 * v * Math.sin(newLat)) / p);
-	    errvalue = Math.abs(lat0 - newLat);
-	    newLat = lat0;
-	  }
-
-	  //convert back to degrees
-	  newLat = newLat * rad2deg;
-	  newLon = newLon * rad2deg;
-
-	  return new OSGB36LatLng(newLat, newLon);
-	};
-
-	WGS84LatLng.prototype.to_IE_latlng = function () {
-	  var phip = this.lat * deg2rad;
-	  var lambdap = this.lng * deg2rad;
-
-	  var IRISH_AXIS = 6377340.189;
-	  var IRISH_ECCENTRIC = 0.00667054015;
-
-	  var WGS84_AXIS = 6378137;
-	  var WGS84_ECCENTRIC = 0.00669438037928458;
-
-	  /*
-	   * IE
-	   a = 6377340.189;      // OSI semi-major
-	   b = 6356034.447;      // OSI semi-minor
-	   e0 = 200000;          // OSI easting of false origin
-	   n0 = 250000;          // OSI northing of false origin
-	   f0 = 1.000035;        // OSI scale factor on central meridian
-	   e2 = 0.00667054015;   // OSI eccentricity squared
-	   lam0 = -0.13962634015954636615389526147909;   // OSI false east
-	   phi0 = 0.93375114981696632365417456114141;    // OSI false north
-	   */
-
-	  var height = 0;
-	  var latlng = LatLng.transform(phip, lambdap, WGS84_AXIS, WGS84_ECCENTRIC, height, IRISH_AXIS, IRISH_ECCENTRIC, -482.53, 130.596, -564.557, 1.042, 0.214, 0.631, 8.15);
-
-	  return new IELatLng(latlng.lat * rad2deg, latlng.lng * rad2deg);
-	};
-
-	WGS84LatLng.prototype.to_CI_latlng = function () {
-	  var phip = this.lat * deg2rad;
-	  var lambdap = this.lng * deg2rad;
-
-	  var CI_AXIS = 6378388.000;
-	  var CI_ECCENTRIC = 0.0067226700223333;
-
-	  var WGS84_AXIS = 6378137;
-	  var WGS84_ECCENTRIC = 0.00669438037928458;
-
-	  /*
-	   * CI
-	   a = 6378388.000;       // INT24 ED50 semi-major
-	   b = 6356911.946;       // INT24 ED50 semi-minor
-	   e0 = 500000;           // CI easting of false origin
-	   n0 = 0;                // CI northing of false origin
-	   f0 = 0.9996;           // INT24 ED50 scale factor on central meridian
-	   e2 = 0.0067226700223333;  // INT24 ED50 eccentricity squared
-	   lam0 = -0.0523598775598;  // CI false east
-	   phi0 = 0 * deg2rad;       // CI false north
-	   */
-
-	  var height = 0;
-	  var latlng = LatLng.transform(phip, lambdap, WGS84_AXIS, WGS84_ECCENTRIC, height, CI_AXIS, CI_ECCENTRIC, 83.901, 98.127, 118.635, 0, 0, 0, 0);
-
-	  return new _CILatLng2.default(latlng.lat * rad2deg, latlng.lng * rad2deg);
-	};
-
-	exports.default = WGS84LatLng;
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _OSGB36LatLng = __webpack_require__(11);
-
-	var _OSGB36LatLng2 = _interopRequireDefault(_OSGB36LatLng);
-
-	var _WGS84LatLng = __webpack_require__(12);
-
-	var _WGS84LatLng2 = _interopRequireDefault(_WGS84LatLng);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**
-	 * represents lat lng as Modified Airy (Irish grid projection)
-	 *
-	 * @param {number} lat
-	 * @param {number} lng
-	 * @constructor
-	 */
-	var IELatLng = function IELatLng(lat, lng) {
-	  this.lat = lat;
-	  this.lng = lng;
-	};
-
-	//converts lat and lon (modified Airy) to OSI northings and eastings
-	IELatLng.prototype.to_os_coords = function () {
-	  //var deg2rad = Math.PI / 180;
-	  //var rad2deg = 180.0 / Math.PI;
-
-	  var phi = this.lat * deg2rad; // convert latitude to radians
-	  var lam = this.lng * deg2rad; // convert longitude to radians
-	  var a = 6377340.189; // OSI semi-major
-	  var b = 6356034.447; // OSI semi-minor
-	  var e0 = 200000; // OSI easting of false origin
-	  var n0 = 250000; // OSI northing of false origin
-	  var f0 = 1.000035; // OSI scale factor on central meridian
-	  var e2 = 0.00667054015; // OSI eccentricity squared
-	  var lam0 = -0.13962634015954636615389526147909; // OSI false east
-	  var phi0 = 0.93375114981696632365417456114141; // OSI false north
-	  var af0 = a * f0;
-	  var bf0 = b * f0;
-
-	  // easting
-	  var slat2 = Math.sin(phi) * Math.sin(phi);
-	  var nu = af0 / Math.sqrt(1 - e2 * slat2);
-	  var rho = nu * (1 - e2) / (1 - e2 * slat2);
-	  var eta2 = nu / rho - 1;
-	  var p = lam - lam0;
-	  var IV = nu * Math.cos(phi);
-	  var clat3 = Math.pow(Math.cos(phi), 3);
-	  var tlat2 = Math.tan(phi) * Math.tan(phi);
-	  var V = nu / 6 * clat3 * (nu / rho - tlat2);
-	  var clat5 = Math.pow(Math.cos(phi), 5);
-	  var tlat4 = Math.pow(Math.tan(phi), 4);
-	  var VI = nu / 120 * clat5 * (5 - 18 * tlat2 + tlat4 + 14 * eta2 - 58 * tlat2 * eta2);
-	  var east = e0 + p * IV + Math.pow(p, 3) * V + Math.pow(p, 5) * VI;
-
-	  // northing
-	  var n = (af0 - bf0) / (af0 + bf0);
-	  var M = _OSGB36LatLng2.default._Marc(bf0, n, phi0, phi);
-	  var I = M + n0;
-	  var II = nu / 2 * Math.sin(phi) * Math.cos(phi);
-	  var III = nu / 24 * Math.sin(phi) * Math.pow(Math.cos(phi), 3) * (5 - Math.pow(Math.tan(phi), 2) + 9 * eta2);
-	  var IIIA = nu / 720 * Math.sin(phi) * clat5 * (61 - 58 * tlat2 + tlat4);
-	  var north = I + p * p * II + Math.pow(p, 4) * III + Math.pow(p, 6) * IIIA;
-
-	  //return {x: Math.round(east), y: Math.round(north)};
-
-	  /*
-	   return (east > 0 && north > 0) ?
-	   new OSIRef(Math.round(east), Math.round(north))
-	   :
-	   null;
-	   */
-	  return new OSIRef(Math.round(east), Math.round(north));
-	};
-
-	/**
-	 * convert Irish projection to WGS84 (for Google Maps)
-	 * see http://www.dorcus.co.uk/carabus/ll_ngr.html
-	 */
-	IELatLng.prototype.IE_to_WGS84 = function () {
-	  var IRISH_AXIS = 6377340.189;
-	  var IRISH_ECCENTRIC = 0.00667054015;
-
-	  var WGS84_AXIS = 6378137;
-	  var WGS84_ECCENTRIC = 0.00669438037928458;
-
-	  /*
-	   * IE
-	   a = 6377340.189;      // OSI semi-major
-	   b = 6356034.447;      // OSI semi-minor
-	   e0 = 200000;          // OSI easting of false origin
-	   n0 = 250000;          // OSI northing of false origin
-	   f0 = 1.000035;        // OSI scale factor on central meridian
-	   e2 = 0.00667054015;   // OSI eccentricity squared
-	   lam0 = -0.13962634015954636615389526147909;   // OSI false east
-	   phi0 = 0.93375114981696632365417456114141;    // OSI false north
-	   */
-
-	  //height = 0;
-
-	  var latLngRadians = LatLng.transform(this.lat * deg2rad, this.lng * deg2rad, IRISH_AXIS, IRISH_ECCENTRIC, 0, WGS84_AXIS, WGS84_ECCENTRIC, 482.53, -130.596, 564.557, -1.042, -0.214, -0.631, -8.15);
-
-	  return new _WGS84LatLng2.default(latLngRadians.lat * rad2deg, latLngRadians.lng * rad2deg);
-	};
-
-	exports.default = IELatLng;
-
-/***/ }),
-/* 14 */
+/* 17 */
 /***/ (function(module, exports) {
 
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
+	'use strict';
 
 	/**
-	 * represents lat lng
-	 *
-	 * @param {number} lat
-	 * @param {number} lng
-	 * @constructor
+	* polyfill for browsers other than firefox
+	*/
+	if (!('asinh' in Math)) {
+	  Math.asinh = function (x) {
+	    return Math.log(x + Math.sqrt(x * x + 1));
+	  };
+	}
+
+	/**
+	 * polyfill for browsers other than firefox and chrome
 	 */
-	var LatLng = function LatLng(lat, lng) {
-	  this.lat = lat;
-	  this.lng = lng;
-	};
-
-	LatLng.transform = function (lat, lon, a, e, h, a2, e2, xp, yp, zp, xr, yr, zr, s) {
-	  // convert to cartesian; lat, lon are radians
-	  var sf = s * 0.000001;
-	  var v = a / Math.sqrt(1 - e * (Math.sin(lat) * Math.sin(lat)));
-	  var x = (v + h) * Math.cos(lat) * Math.cos(lon);
-	  var y = (v + h) * Math.cos(lat) * Math.sin(lon);
-	  var z = ((1 - e) * v + h) * Math.sin(lat);
-	  // transform cartesian
-	  var xrot = xr / 3600 * deg2rad;
-	  var yrot = yr / 3600 * deg2rad;
-	  var zrot = zr / 3600 * deg2rad;
-	  var hx = x + x * sf - y * zrot + z * yrot + xp;
-	  var hy = x * zrot + y + y * sf - z * xrot + yp;
-	  var hz = -1 * x * yrot + y * xrot + z + z * sf + zp;
-	  // Convert back to lat, lon
-	  lon = Math.atan(hy / hx);
-	  var p = Math.sqrt(hx * hx + hy * hy);
-	  lat = Math.atan(hz / (p * (1 - e2)));
-	  v = a2 / Math.sqrt(1 - e2 * (Math.sin(lat) * Math.sin(lat)));
-	  var errvalue = 1.0;
-	  var lat0 = 0;
-	  while (errvalue > 0.001) {
-	    lat0 = Math.atan((hz + e2 * v * Math.sin(lat)) / p);
-	    errvalue = Math.abs(lat0 - lat);
-	    lat = lat0;
-	  }
-	  //h = p / Math.cos(lat) - v;
-	  //var geo = { latitude: lat, longitude: lon, height: h };  // object to hold lat and lon
-	  return new LatLng(lat, lon);
-	};
-
-	exports.default = LatLng;
+	if (!('trunc' in Math)) {
+	  Math.trunc = function (x) {
+	    return x < 0 ? Math.ceil(x) : Math.floor(x);
+	  };
+	}
 
 /***/ })
 /******/ ])

@@ -1,5 +1,6 @@
 import OSCIRef from 'OSCIRef';
 import OSGB36LatLng from 'OSGB36LatLng';
+import { deg2rad } from 'constants';
 
 /**
  * represents lat lng as INT24 (CI grid projection)

@@ -1,4 +1,7 @@
 import NationalGridCoords from 'NationalGridCoords';
+import WGS84LatLng from 'WGS84LatLng';
+import LatLng from 'LatLng';
+import { deg2rad, rad2deg } from 'constants';
 
 /**
  *
