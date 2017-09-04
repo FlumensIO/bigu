@@ -4,7 +4,7 @@ const webpack = require('webpack');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const pkg = require('./package.json');
 
-var filename = 'BIGU.js';
+var filename = 'bigu.js';
 
 const banner = `
 ${pkg.name} ${pkg.version}
@@ -29,18 +29,18 @@ if (uglify) {
   plugins.push(new webpack.optimize.UglifyJsPlugin({
     minimize: true,
   }));
-  filename = 'BIGU.min.js';
+  filename = 'bigu.min.js';
 }
 
 module.exports = {
   context: './src',
   entry: {
-    BIGU: './main.js',
+    bigu: './main.js',
   },
   output: {
     path: 'dist',
     filename,
-    library: 'BIGU',
+    library: 'bigu',
     libraryTarget: 'umd',
     umdNamedDefine: true,
   },

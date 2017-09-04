@@ -15,7 +15,7 @@ import WGS84LatLng from 'WGS84LatLng';
 import './polyfill';
 
 
-var BIGU = {
+var bigu = {
   scriptVersions: {},
   GridRefParser,
   GridRefParserCI,
@@ -33,9 +33,9 @@ var BIGU = {
   WGS84LatLng,
 };
 
-BIGU.scriptVersions.gridref = '001';
+bigu.scriptVersions.gridref = '001';
 
-BIGU.scriptVersions.grParser = '002';
+bigu.scriptVersions.grParser = '002';
 
 /**
  *
@@ -43,20 +43,20 @@ BIGU.scriptVersions.grParser = '002';
  * @param {number} lng
  * @returns {NationalGridCoords}
  */
-BIGU.latlng_to_grid_coords = function(lat, lng) {
+bigu.latlng_to_grid_coords = function(lat, lng) {
   // test if GB
   if (lng >= -8.74 && lat > 49.88) {
     // lng extreme must accomodate St Kilda
 
-    var os = (new BIGU.WGS84LatLng(lat, lng)).to_OSGB1936_latlng().to_os_coords();
-    if (os.x >= 0 && BIGU.MappingUtils.is_gb_hectad(BIGU.MappingUtils.gb_coords_to_hectad(os.x, os.y))) {
+    var os = (new bigu.WGS84LatLng(lat, lng)).to_OSGB1936_latlng().to_os_coords();
+    if (os.x >= 0 && bigu.MappingUtils.is_gb_hectad(bigu.MappingUtils.gb_coords_to_hectad(os.x, os.y))) {
       return os;
     }
   }
 
   // test if Irish
   if (lng < -5.3 && lat > 51.34 && lng > -11 && lat < 55.73) {
-    var osI = (new BIGU.WGS84LatLng(lat, lng)).to_IE_latlng().to_os_coords();
+    var osI = (new bigu.WGS84LatLng(lat, lng)).to_IE_latlng().to_os_coords();
 
     if (osI.x < 0 || osI.y < 0) {
       return null;
@@ -64,7 +64,7 @@ BIGU.latlng_to_grid_coords = function(lat, lng) {
       return osI;
     }
   } else {
-    var osCi = (new BIGU.WGS84LatLng(lat, lng)).to_CI_latlng().to_os_coords();
+    var osCi = (new bigu.WGS84LatLng(lat, lng)).to_CI_latlng().to_os_coords();
 
     if (osCi.x >= 500000 && osCi.x < 600000 && osCi.y >= 5400000 && osCi.y < 5600000) {
       return osCi;
@@ -75,7 +75,7 @@ BIGU.latlng_to_grid_coords = function(lat, lng) {
 };
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = BIGU;
+  module.exports = bigu;
 }
 
-export default BIGU;
+export default bigu;
