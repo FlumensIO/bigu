@@ -1,6 +1,6 @@
 /*!
  * 
- * bigu 0.2.1
+ * bigu 0.2.2
  * British Isles GridRef Utils
  * Author Tom Humphrey
  * Contributors Karolis Kazlauskis
@@ -2590,6 +2590,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	if (!('trunc' in Math)) {
 	  Math.trunc = function (x) {
 	    return x < 0 ? Math.ceil(x) : Math.floor(x);
+	  };
+	}
+
+	if (!('log10' in Math)) {
+	  Math.log10 = function (x) {
+	    return Math.log(x) * Math.LOG10E;
 	  };
 	}
 
