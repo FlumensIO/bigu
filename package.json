@@ -1,32 +1,19 @@
 {
-  "name": "bigu",
+  "name": "@flumens/bigu",
   "title": "British Isles GridRef Utils",
   "description": "British Isles GridRef Utils",
   "version": "0.2.2",
-  "homepage": "https://github.com/kazlauskis/bigu",
+  "homepage": "https://github.com/flumensio/bigu",
   "author": {
     "name": "Tom Humphrey",
     "email": "tom.humphrey@bsbi.org"
   },
-  "contributors": [
-    {
-      "name": "Karolis Kazlauskis",
-      "email": "karkaz@ceh.ac.uk",
-      "url": "http://brc.ac.uk"
-    }
-  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/kazlauskis/bigu"
+    "url": "https://github.com/flumensio/bigu"
   },
-  "licenses": [
-    {
-      "type": "MIT License",
-      "url": "https://opensource.org/licenses/MIT"
-    }
-  ],
   "bugs": {
-    "url": "https://github.com/kazlauskis/bigu/issues"
+    "url": "https://github.com/flumensio/bigu/issues"
   },
   "main": "dist/bigu.js",
   "scripts": {
