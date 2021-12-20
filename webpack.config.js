@@ -1,22 +1,18 @@
-const path = require('path');
-const _ = require('underscore');
-const webpack = require('webpack');
-const CircularDependencyPlugin = require('circular-dependency-plugin');
-const pkg = require('./package.json');
+const path = require("path");
+const _ = require("underscore");
+const webpack = require("webpack");
+const CircularDependencyPlugin = require("circular-dependency-plugin");
+const pkg = require("./package.json");
 
-var filename = 'bigu.js';
+var filename = "bigu.js";
 
 const banner = `
 ${pkg.name} ${pkg.version}
 ${pkg.description}
-Author ${pkg.author.name}
-Contributors ${pkg.contributors[0].name}
-Released under the ${_.pluck(pkg.licenses, 'type').join(', ')} license.
-${_.pluck(pkg.licenses, 'url')}
 `;
 
 // production uglify
-const uglify = process.argv.indexOf('--uglify') !== -1;
+const uglify = process.argv.indexOf("--uglify") !== -1;
 const plugins = [
   new webpack.DefinePlugin({
     LIB_VERSION: JSON.stringify(pkg.version),
@@ -26,38 +22,37 @@ const plugins = [
 ];
 
 if (uglify) {
-  plugins.push(new webpack.optimize.UglifyJsPlugin({
-    minimize: true,
-  }));
-  filename = 'bigu.min.js';
+  plugins.push(
+    new webpack.optimize.UglifyJsPlugin({
+      minimize: true,
+    })
+  );
+  filename = "bigu.min.js";
 }
 
 module.exports = {
-  context: './src',
+  context: "./src",
   entry: {
-    bigu: './main.js',
+    bigu: "./main.js",
   },
   output: {
-    path: 'dist',
+    path: "dist",
     filename,
-    library: 'bigu',
-    libraryTarget: 'umd',
-    umdNamedDefine: true,
+    library: "@flumens/bigu",
+    libraryTarget: "commonjs",
   },
   resolve: {
-    root: [
-      path.resolve('./src'),
-    ],
+    root: [path.resolve("./src")],
   },
   resolveLoader: {
-    root: path.join(__dirname, 'node_modules'),
+    root: path.join(__dirname, "node_modules"),
   },
   module: {
     loaders: [
       {
         // test: /^\.js$/,
         exclude: /(node_modules)/,
-        loader: 'babel-loader',
+        loader: "babel-loader",
       },
     ],
   },

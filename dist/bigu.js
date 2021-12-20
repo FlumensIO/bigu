@@ -1,24 +1,11 @@
 /*!
  * 
- * bigu 0.2.2
+ * @flumens/bigu 0.3.0
  * British Isles GridRef Utils
- * Author Tom Humphrey
- * Contributors Karolis Kazlauskis
- * Released under the MIT License license.
- * https://opensource.org/licenses/MIT
  * 
  */
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define("bigu", [], factory);
-	else if(typeof exports === 'object')
-		exports["bigu"] = factory();
-	else
-		root["bigu"] = factory();
-})(this, function() {
-return /******/ (function(modules) { // webpackBootstrap
+exports["@flumens/bigu"] =
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 
@@ -2600,6 +2587,4 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ })
-/******/ ])
-});
-;
+/******/ ]);
