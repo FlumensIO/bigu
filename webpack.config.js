@@ -38,7 +38,6 @@ module.exports = {
   output: {
     path: "dist",
     filename,
-    library: "@flumens/bigu",
     libraryTarget: "commonjs",
   },
   resolve: {

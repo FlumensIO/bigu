@@ -1,11 +1,10 @@
 /*!
  * 
- * @flumens/bigu 0.3.0
+ * @flumens/bigu 0.4.0
  * British Isles GridRef Utils
  * 
  */
-exports["@flumens/bigu"] =
-/******/ (function(modules) { // webpackBootstrap
+(function(e, a) { for(var i in a) e[i] = a[i]; }(exports, /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 
@@ -2587,4 +2586,4 @@ exports["@flumens/bigu"] =
 	}
 
 /***/ })
-/******/ ]);
+/******/ ])));
